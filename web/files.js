@@ -9,7 +9,7 @@
 // server-side deletes from the fslog newer than the watermark.
 
 // User can set his own server apiUrl through localstorage.
-const API_URL = localStorage.getItem('apiUrl') || document.location.protocol + '//' + document.location.host + '/';
+const API_URL = localStorage.getItem('apiUrl') || document.location.protocol + '//' + document.location.host;
 const CURRENT_FILE_SYNC_INTERVAL = 1000; // ms, how often to save currently open file
 // Matches server's MaxMediaSize (server/sync/sync.go). Server caps the JSON
 // request body, which holds base64 (~33% inflation), so the effective raw

@@ -56,7 +56,9 @@ func GenOneTimeToken(userID int64) string {
 	return token
 }
 func GenOneToken(w http.ResponseWriter, r *http.Request) {
-	token := GenOneTimeToken(123456789) // TODO: replace with actual user ID
+	userIDStr := r.URL.Query().Get("userid")
+	userID, _ := strconv.ParseInt(userIDStr, 10, 64)
+	token := GenOneTimeToken(userID) // TODO: replace with actual user ID
 	onetimeURL := fmt.Sprintf("%s?token=%s", config.ServerCfg.AppURL, token)
 	w.Write([]byte(onetimeURL))
 

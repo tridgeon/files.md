@@ -33,6 +33,11 @@ func main() {
 	fs.LogRename = sync.LogRename
 	fs.LogDelete = sync.LogDelete
 
+	// Start the server and bot.
+	token := sync.GenOneTimeToken(123456789) // TODO: replace with actual user ID
+	onetimeURL := fmt.Sprintf("%s?token=%s", config.ServerCfg.AppURL, token)
+	fmt.Println("One-time login URL:", onetimeURL)
+
 	// Launch the HTTP server, it does two things:
 	// - Serves the PWA app
 	// - Provides the API for synchronization (if API_URL is not empty)
