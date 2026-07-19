@@ -72,27 +72,44 @@ func Serve(apiHost, appHost, certDir, logFilename string) {
 		return
 	}
 
-	// This will also launch :80 http server that would pass ACME challenges or redirects to :443.
-	autocert := certServer(serverLogger, certDir, apiHost, appHost)
-	tlsConfig := &tls.Config{
-		GetCertificate:   autocert.GetCertificate,
-		CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256},
-	}
+	if false {
+		// This will also launch :80 http server that would pass ACME challenges or redirects to :443.
+		autocert := certServer(serverLogger, certDir, apiHost, appHost)
+		tlsConfig := &tls.Config{
+			GetCertificate:   autocert.GetCertificate,
+			CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256},
+		}
 
-	srv := &http.Server{
-		Addr:         ":443",
-		TLSConfig:    tlsConfig,
-		IdleTimeout:  2 * time.Minute,
-		ReadTimeout:  30 * time.Second, // Otherwise we get net::ERR_HTTP2_PROTOCOL_ERROR (RST_STREAM) errors on slow clients (I personally experienced it in South America on syncMedia upload)
-		WriteTimeout: 2 * time.Minute,  // For slow files like inbox.wasm.
-		ErrorLog:     serverLogger,
-	}
-	srv.Handler = router(serverLogger)
+		srv := &http.Server{
+			Addr:         ":443",
+			TLSConfig:    tlsConfig,
+			IdleTimeout:  2 * time.Minute,
+			ReadTimeout:  30 * time.Second, // Otherwise we get net::ERR_HTTP2_PROTOCOL_ERROR (RST_STREAM) errors on slow clients (I personally experienced it in South America on syncMedia upload)
+			WriteTimeout: 2 * time.Minute,  // For slow files like inbox.wasm.
+			ErrorLog:     serverLogger,
+		}
+		srv.Handler = router(serverLogger)
 
-	serverLogger.Printf("Starting HTTPS server on %s (api_host=%q app_host=%q cert_dir=%q)", srv.Addr, apiHost, appHost, certDir)
-	err := srv.ListenAndServeTLS("", "") // Key and cert provided automatically by autocert
-	if err != nil {
-		panic(err)
+		serverLogger.Printf("Starting HTTPS server on %s (api_host=%q app_host=%q cert_dir=%q)", srv.Addr, apiHost, appHost, certDir)
+		err := srv.ListenAndServeTLS("", "") // Key and cert provided automatically by autocert
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		srv := &http.Server{
+			Addr:         ":4433",
+			IdleTimeout:  2 * time.Minute,
+			ReadTimeout:  30 * time.Second, // Otherwise we get net::ERR_HTTP2_PROTOCOL_ERROR (RST_STREAM) errors on slow clients (I personally experienced it in South America on syncMedia upload)
+			WriteTimeout: 2 * time.Minute,  // For slow files like inbox.wasm.
+			ErrorLog:     serverLogger,
+		}
+		srv.Handler = router(serverLogger)
+
+		serverLogger.Printf("Starting HTTPS server on %s (api_host=%q app_host=%q cert_dir=%q)", srv.Addr, apiHost, appHost, certDir)
+		err := srv.ListenAndServeTLS("cert.pem", "key.pem") // Key manually specified
+		if err != nil {
+			panic(err)
+		}
 	}
 }
 
@@ -124,6 +141,7 @@ func router(serverLogger *log.Logger) *http.ServeMux {
 		r.HandleFunc("/syncMediaFilenames", corsMiddleware(panicMiddleware(tokenMiddleware(gzipMiddleware(SyncMediaFilenames)))))
 		r.HandleFunc("/syncMediaFile", corsMiddleware(panicMiddleware(tokenMiddleware(gzipMiddleware(SyncMediaFile)))))
 		r.HandleFunc("/issuePermanentToken", corsMiddleware(panicMiddleware(IssueToken)))
+		r.HandleFunc("/genOneToken", corsMiddleware(panicMiddleware(GenOneToken)))
 
 		// Deprecated due to cryptic names :) Will be removed soon.
 		r.HandleFunc("/syncTexts", corsMiddleware(panicMiddleware(tokenMiddleware(gzipMiddleware(SyncFilenames)))))

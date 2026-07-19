@@ -55,6 +55,12 @@ func GenOneTimeToken(userID int64) string {
 
 	return token
 }
+func GenOneToken(w http.ResponseWriter, r *http.Request) {
+	token := GenOneTimeToken(123456789) // TODO: replace with actual user ID
+	onetimeURL := fmt.Sprintf("%s?token=%s", config.ServerCfg.AppURL, token)
+	w.Write([]byte(onetimeURL))
+
+}
 
 func findUserID(token string) (int64, bool) {
 	tokens, err := fs.NewFS(config.ServerCfg.TokensDir, afero.NewOsFs())
