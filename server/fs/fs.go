@@ -186,12 +186,21 @@ func (fs FS) Write(dir, filename, content string) error {
 	if err != nil {
 		return fmt.Errorf("fs write: unsafe filePath '%s': %w", filepath.Join(dir, filename), ErrUnsafePath)
 	}
+	
+	sep := ""
+	if strings.Contains(filePath,"\\") == true {
+		sep="\\"
+	}else{
+		sep="/"
+	}
 
-	dirs := strings.Split(filePath, "/")
+	dirs := strings.Split(filePath, sep)
 	dirs = dirs[:len(dirs)-1]
-	pathToDir := strings.Join(dirs, "/")
+	pathToDir := strings.Join(dirs, sep	)
+	//userPath := path.Join(fs.rootPath, dir)
+	//pathToDir:= path.Join(fs.rootPath, pathToDir)
 	if err := fs.backend.MkdirAll(pathToDir, 0o755); err != nil {
-		return fmt.Errorf("fs write: can't create dirs '%s': %w", pathToDir, err)
+		return fmt.Errorf("fs write: can't create dirs '%s' '%s' '%s' '%s' '%s': %w", pathToDir, filePath, dir, filename, fs.rootPath, err)
 	}
 
 	// Track old size for quota accounting.

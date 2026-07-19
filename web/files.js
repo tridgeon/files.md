@@ -9,7 +9,7 @@
 // server-side deletes from the fslog newer than the watermark.
 
 // User can set his own server apiUrl through localstorage.
-const API_URL = localStorage.getItem('apiUrl') || 'https://api.files.md';
+const API_URL = localStorage.getItem('apiUrl') || document.location.protocol + '//' + document.location.host + '/';
 const CURRENT_FILE_SYNC_INTERVAL = 1000; // ms, how often to save currently open file
 // Matches server's MaxMediaSize (server/sync/sync.go). Server caps the JSON
 // request body, which holds base64 (~33% inflation), so the effective raw
@@ -333,7 +333,11 @@ async function syncFilesWithServer() {
             let {path, content, lastModified} = fileInfo;
             // We get relative paths from server, and in our app we use absolute paths
             const relPath = path;
+            
             path = joinPath('/', relPath);
+            if (path.includes('\\')) {  
+                path = path.replace(/\\/g, '/');
+            }
 
             // If it is current file, skip, because we sync it separately
             // TODO if we skip current, don't take it's timestamp? We had a bug when sync was broken for 1 file
