@@ -50,6 +50,76 @@ test('should load the Files.md editor', async ({page}) => {
     await expect(page.locator('#open-folder')).toBeVisible();
 });
 
+test('encrypt shortcut stores token and renders masked text', async ({page}) => {
+    const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
+
+    await page.evaluate(() => {
+        const cm = window.editor;
+        cm.setValue('# Welcome\nmy secret text');
+        cm.focus();
+        cm.setSelection({ line: 1, ch: 3 }, { line: 1, ch: 9 });
+    });
+
+    await page.keyboard.press(`${modifier}+Shift+E`);
+    await page.waitForSelector('.enc-modal-input');
+    await page.fill('.enc-modal-input', 'pw123');
+    await page.click('.enc-modal-btn-primary');
+
+    await expect.poll(async () => {
+        return await page.evaluate(() => window.editor.getValue());
+    }).toMatch(/!enc\[v1:\d+:[A-Za-z0-9_-]+:[A-Za-z0-9_-]+:[A-Za-z0-9_-]+\]/);
+
+    await expect(page.locator('.hmd-encrypted-mask')).toHaveText('****');
+});
+
+test('encrypted mask click copies decrypted text and asks again after cache expiry', async ({page}) => {
+    const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
+
+    await page.evaluate(() => {
+        Object.defineProperty(navigator, 'clipboard', {
+            configurable: true,
+            value: {
+                writeText: async (val) => {
+                    window.__copiedText = val;
+                },
+            },
+        });
+
+        const cm = window.editor;
+        cm.setValue('# Welcome\nmy secret text');
+        cm.focus();
+        cm.setSelection({ line: 1, ch: 3 }, { line: 1, ch: 9 });
+    });
+
+    await page.keyboard.press(`${modifier}+Shift+E`);
+    await page.waitForSelector('.enc-modal-input');
+    await page.fill('.enc-modal-input', 'pw123');
+    await page.click('.enc-modal-btn-primary');
+    await page.waitForSelector('.hmd-encrypted-mask');
+
+    await page.click('.hmd-encrypted-mask');
+    await page.waitForTimeout(350);
+    await expect.poll(async () => {
+        return await page.evaluate(() => window.__copiedText);
+    }).toBe('secret');
+
+    await page.evaluate(() => {
+        const originalNow = Date.now;
+        Date.now = () => originalNow() + (5 * 60 * 1000 + 1000);
+    });
+
+    await page.evaluate(() => { window.__copiedText = ''; });
+    await page.click('.hmd-encrypted-mask');
+    await page.waitForSelector('.enc-modal-title');
+    await expect(page.locator('.enc-modal-title')).toHaveText('Enter master password');
+    await page.fill('.enc-modal-input', 'pw123');
+    await page.click('.enc-modal-btn-primary');
+
+    await expect.poll(async () => {
+        return await page.evaluate(() => window.__copiedText);
+    }).toBe('secret');
+});
+
 test('should open markdown file via quick panel and see bold text formatting', async ({page}) => {
     const isMac = process.platform === 'darwin';
     const modifier = isMac ? 'Meta' : 'Control';

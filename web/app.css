@@ -274,6 +274,85 @@ td {
     transition: opacity 0.12s ease, visibility 0s 0.12s;
 }
 
+.hmd-encrypted-mask {
+    display: inline-block;
+    padding: 1px 7px;
+    border: 1px solid var(--col-border);
+    border-radius: 999px;
+    background: var(--col-bg-alt);
+    color: var(--col-inline-code);
+    cursor: pointer;
+    user-select: none;
+}
+
+.hmd-encrypted-mask:hover {
+    border-color: var(--col-tx-hover);
+    color: var(--col-tx-hover);
+}
+
+.enc-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.enc-modal {
+    width: min(560px, calc(100vw - 28px));
+    background: var(--col-bg);
+    color: var(--col-tx);
+    border: 1px solid var(--col-border);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    padding: 14px;
+}
+
+.enc-modal-title {
+    margin: 0 0 10px 0;
+    font-size: 1.7rem;
+}
+
+.enc-modal-input {
+    width: 100%;
+    border: 1px solid var(--col-border);
+    border-radius: 8px;
+    background: var(--col-bg-alt);
+    color: var(--col-tx);
+    padding: 8px 10px;
+    font-family: var(--font);
+    font-size: 1.5rem;
+    box-sizing: border-box;
+}
+
+.enc-modal-input-area {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.enc-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.enc-modal-btn {
+    border: 1px solid var(--col-border);
+    border-radius: 8px;
+    background: var(--col-bg-alt);
+    color: var(--col-tx);
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.enc-modal-btn-primary {
+    border-color: var(--color-neo-blue);
+    color: var(--color-neo-blue);
+}
+
 .table-plus.show {
     visibility: visible;
     opacity: 1;

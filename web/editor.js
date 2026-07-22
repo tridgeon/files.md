@@ -63,6 +63,9 @@ function initEditor(el) {
         // Enable fold-code so ```mermaid blocks get rendered via the
         // hypermd-mermaid renderer (registered as suggested:true on load).
         hmdFoldCode: { mermaid: true },
+        hmdFoldEncrypt: {
+            enabled: true,
+        },
         configureMouse: () => ({addNew: false}) // disable multicursor
     });
     newEditor.setSize(null, '100%');
@@ -392,6 +395,16 @@ function initEditor(el) {
             cm.replaceRange('- [ ] ', lineStart);
             cm.focus();
         },
+        'Cmd-Shift-E': async function (cm) {
+            if (!window.HyperMD || !window.HyperMD.FoldEncrypt) return;
+            await window.HyperMD.FoldEncrypt.encryptSelection(cm);
+            cm.focus();
+        },
+        'Ctrl-Shift-E': async function (cm) {
+            if (!window.HyperMD || !window.HyperMD.FoldEncrypt) return;
+            await window.HyperMD.FoldEncrypt.encryptSelection(cm);
+            cm.focus();
+        },
         'Cmd-B': function (cm) {
             let selection = cm.getSelection();
             let trimmedSelection = selection.trim();
@@ -502,6 +515,20 @@ function initEditor(el) {
     initTablePlus(newEditor);
 
     return newEditor;
+}
+
+async function encryptCurrentText() {
+    if (!window.HyperMD || !window.HyperMD.FoldEncrypt) {
+        showToast('Encrypt addon is not loaded');
+        return;
+    }
+    const cm = currentEditor || editor;
+    if (!cm) {
+        showToast('Editor is not ready yet');
+        return;
+    }
+    await window.HyperMD.FoldEncrypt.encryptSelection(cm);
+    cm.focus();
 }
 
 // Focus last line before the links.
