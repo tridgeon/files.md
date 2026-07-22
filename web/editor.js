@@ -400,7 +400,17 @@ function initEditor(el) {
             await window.HyperMD.FoldEncrypt.encryptSelection(cm);
             cm.focus();
         },
+        'Shift-Cmd-E': async function (cm) {
+            if (!window.HyperMD || !window.HyperMD.FoldEncrypt) return;
+            await window.HyperMD.FoldEncrypt.encryptSelection(cm);
+            cm.focus();
+        },
         'Ctrl-Shift-E': async function (cm) {
+            if (!window.HyperMD || !window.HyperMD.FoldEncrypt) return;
+            await window.HyperMD.FoldEncrypt.encryptSelection(cm);
+            cm.focus();
+        },
+        'Shift-Ctrl-E': async function (cm) {
             if (!window.HyperMD || !window.HyperMD.FoldEncrypt) return;
             await window.HyperMD.FoldEncrypt.encryptSelection(cm);
             cm.focus();
@@ -482,6 +492,16 @@ function initEditor(el) {
 
         navigator.clipboard.writeText(code.textContent);
         showCopiedToast();
+    }, true);
+
+    // Some keyboards/layouts don't resolve this combo through CodeMirror's
+    // keymap parser consistently, so keep an explicit fallback.
+    newEditor.getWrapperElement().addEventListener('keydown', async function (e) {
+        if (!(e.metaKey || e.ctrlKey) || !e.shiftKey) return;
+        if (String(e.key).toLowerCase() !== 'e') return;
+        e.preventDefault();
+        e.stopPropagation();
+        await encryptCurrentText();
     }, true);
 
     newEditor.on('renderLine', function (cm, lineHandle, el) {

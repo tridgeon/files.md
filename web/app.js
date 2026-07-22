@@ -823,18 +823,6 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-document.addEventListener('keydown', (e) => {
-    if (e.metaKey || e.ctrlKey) {
-        document.body.classList.add('cmd-pressed');
-    }
-});
-
-document.addEventListener('keyup', (e) => {
-    if (!e.metaKey && !e.ctrlKey) {
-        document.body.classList.remove('cmd-pressed');
-    }
-});
-
 window.addEventListener('popstate', (event) => {
     const state = event.state;
     if (state) {
