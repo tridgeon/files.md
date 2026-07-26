@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,137 +56,167 @@
     <script src="files.js?v="></script>
     <!-- mermaid.min.js is lazy-loaded on first ```mermaid encounter -->
 </head>
+
 <body>
 
-<div id="open-sidebar" onclick="toggleSidebar()" style="display: none"></div>
-<div id="sidebar">
-    <div class="resize"
-         role="separator"
-         tabindex="0"
-         aria-label="Resize sidebar with mouse"
-         aria-orientation="vertical">
-        <button id="close-sidebar" data-tooltip="Close sidebar (⌘~)" aria-label="Close sidebar (⌘~)" onclick="toggleSidebar()">×</button>
-    </div>
-    <div id="toolbar">
-        <button id="new-file" data-tooltip="New File (⌘N)" aria-label="New File (⌘N)" onclick="newFile()">
-            <svg width="22" height="22" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="10" stroke-linejoin="round" transform="matrix(1, 0, 0, -1, 0, 0)">
-                <path d="M208,36H48A12.01375,12.01375,0,0,0,36,48V208a12.01375,12.01375,0,0,0,12,12H156.68652a11.92174,11.92174,0,0,0,8.48536-3.51465l51.31347-51.31347A11.92174,11.92174,0,0,0,220,156.68652V48A12.01375,12.01375,0,0,0,208,36ZM164,206.34277V163.99219h42.35107Zm48-50.35058H160a3.99988,3.99988,0,0,0-4,4V212H48a4.00458,4.00458,0,0,1-4-4V48a4.00458,4.00458,0,0,1,4-4H208a4.00458,4.00458,0,0,1,4,4Z"></path>
-            </svg>
-        </button>
-        <button id="new-folder" data-tooltip="New Folder (⌘⇧N)" aria-label="New Folder (⌘⇧N)" onclick="newFolder()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 32 32">
-                <path stroke-linecap="round" stroke-width="2" d="M28 11v13a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h6c3 0 3 3 5 3h9.003C27.108 9 28 9.895 28 11z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-8M12 17h8"/>
-            </svg>
-        </button>
-        <button id="open-folder-btn" data-tooltip="Open folder" aria-label="Open folder" onclick="openDir()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 32 32">
-                <path stroke-linecap="round" stroke-width="2" d="M28 11v13a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h6c3 0 3 3 5 3h9.003C27.108 9 28 9.895 28 11z"/>
-            </svg>
-        </button>
-        <button id="random-file" data-tooltip="Show Random File" aria-label="Show Random File" onclick="openRandomFile()">
-            <?xml version="1.0" encoding="utf-8"?>
-            <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M7.2 20H16.8C17.9201 20 18.4802 20 18.908 19.782C19.2843 19.5903 19.5903 19.2843 19.782 18.908C20 18.4802 20 17.9201 20 16.8V7.2C20 6.0799 20 5.51984 19.782 5.09202C19.5903 4.71569 19.2843 4.40973 18.908 4.21799C18.4802 4 17.9201 4 16.8 4H7.2C6.0799 4 5.51984 4 5.09202 4.21799C4.71569 4.40973 4.40973 4.71569 4.21799 5.09202C4 5.51984 4 6.07989 4 7.2V16.8C4 17.9201 4 18.4802 4.21799 18.908C4.40973 19.2843 4.71569 19.5903 5.09202 19.782C5.51984 20 6.07989 20 7.2 20Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M8 8H8.01M8 12H8.01M16 12H16.01M16 8H16.01M16 16H16.01M8 16H8.01" stroke-width="2.025" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-        <button id="encrypt-selection" data-tooltip="Encrypt text (⌘⇧E / Ctrl+Shift+E)" aria-label="Encrypt text (Cmd+Shift+E / Ctrl+Shift+E)" onclick="encryptCurrentText()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 32 32">
-                <rect x="7" y="14" width="18" height="14" rx="2" stroke-width="2"/>
-                <path d="M11 14v-3a5 5 0 0 1 10 0v3" stroke-width="2" stroke-linecap="round"/>
-                <circle cx="16" cy="21" r="1.8" fill="currentColor" stroke="none"/>
-            </svg>
-        </button>
-    </div>
-    <div id="tree">
-    </div>
-    <div id="open-folder" onclick="openDir()" title="Open folder" style="display: none">
-        <svg width="20" height="20" fill="none" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-width="2" d="M28 11v13a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h6c3 0 3 3 5 3h9.003C27.108 9 28 9.895 28 11z"/>
-        </svg>
-        <span>Open folder</span>
-    </div>
-</div>
-
-<div id="content">
-    <div id="editor-container">
-        <textarea id="editor-textarea" style="display: none"></textarea>
-    </div>
-    <div id="editor2-container" style="display: none">
-        <textarea id="editor2-textarea" style="display: none"></textarea>
-        <div id="nav-buttons">
-        <button id="go-backward" class="nav-button" onclick="goBack()" data-tooltip="Go Back (⌘[)" aria-label="Go Back (⌘[)">
-            <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="none" viewBox="0 0 32 32">
-                <path  stroke-linecap="round" stroke-width="2.5" d="M6 16h21"/>
-                <path  stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 8l-8 8 8 8"/>
-            </svg>
-        </button>
-        <button id="go-forward" class="nav-button" onclick="goForward()" data-tooltip="Go Forward (⌘])" aria-label="Go Forward (⌘])">
-            <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="none" viewBox="0 0 32 32">
-                <path  stroke-linecap="round" stroke-width="2.5" d="M5 16h21"/>
-                <path  stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 8l8 8-8 8"/>
-            </svg>
-        </button>
-            <button id="close-editor2" onclick="hideEditor2()" data-tooltip="Close (Esc)" aria-label="Close split view">×</button>
+    <div id="open-sidebar" onclick="toggleSidebar()" style="display: none"></div>
+    <div id="sidebar">
+        <div class="resize" role="separator" tabindex="0" aria-label="Resize sidebar with mouse"
+            aria-orientation="vertical">
+            <button id="close-sidebar" data-tooltip="Close sidebar (⌘~)" aria-label="Close sidebar (⌘~)"
+                onclick="toggleSidebar()">×</button>
         </div>
-    </div>
-    <div id="chat-container" style="display: none">
-        <div id="chat" style="display: none;"></div>
-        <div id="chat-input-wrap" style="position: relative;">
-            <textarea id="chat-input" style="display: none;" class="input-field" placeholder="Dump your thoughts..." rows="1"></textarea>
-            <button id="mic-chat" onclick="toggleMicRecording()" title="Record voice message" aria-label="Record voice message" style="display: none">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="8" y="3" width="8" height="13" rx="4"/>
-                    <path d="M5 12a7 7 0 0 0 14 0"/>
-                    <line x1="12" y1="19" x2="12" y2="22"/>
-                    <line x1="8" y1="22" x2="16" y2="22"/>
+        <div id="toolbar">
+            <button id="new-file" data-tooltip="New File (⌘N)" aria-label="New File (⌘N)" onclick="newFile()">
+                <svg width="22" height="22" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    stroke="currentColor" stroke-width="10" stroke-linejoin="round"
+                    transform="matrix(1, 0, 0, -1, 0, 0)">
+                    <path
+                        d="M208,36H48A12.01375,12.01375,0,0,0,36,48V208a12.01375,12.01375,0,0,0,12,12H156.68652a11.92174,11.92174,0,0,0,8.48536-3.51465l51.31347-51.31347A11.92174,11.92174,0,0,0,220,156.68652V48A12.01375,12.01375,0,0,0,208,36ZM164,206.34277V163.99219h42.35107Zm48-50.35058H160a3.99988,3.99988,0,0,0-4,4V212H48a4.00458,4.00458,0,0,1-4-4V48a4.00458,4.00458,0,0,1,4-4H208a4.00458,4.00458,0,0,1,4,4Z">
+                    </path>
                 </svg>
             </button>
-            <button id="send-chat" onclick="sendToChat()" title="Send" aria-label="Send" style="display: none">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 32 32">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-width="3" d="M16 27V6"/>
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M24 13l-8-8-8 8"/>
+            <button id="new-folder" data-tooltip="New Folder (⌘⇧N)" aria-label="New Folder (⌘⇧N)" onclick="newFolder()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 32 32">
+                    <path stroke-linecap="round" stroke-width="2"
+                        d="M28 11v13a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h6c3 0 3 3 5 3h9.003C27.108 9 28 9.895 28 11z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-8M12 17h8" />
+                </svg>
+            </button>
+            <button id="open-folder-btn" data-tooltip="Open folder" aria-label="Open folder" onclick="openDir()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 32 32">
+                    <path stroke-linecap="round" stroke-width="2"
+                        d="M28 11v13a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h6c3 0 3 3 5 3h9.003C27.108 9 28 9.895 28 11z" />
+                </svg>
+            </button>
+            <button id="random-file" data-tooltip="Show Random File" aria-label="Show Random File"
+                onclick="openRandomFile()">
+                <?xml version="1.0" encoding="utf-8"?>
+                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M7.2 20H16.8C17.9201 20 18.4802 20 18.908 19.782C19.2843 19.5903 19.5903 19.2843 19.782 18.908C20 18.4802 20 17.9201 20 16.8V7.2C20 6.0799 20 5.51984 19.782 5.09202C19.5903 4.71569 19.2843 4.40973 18.908 4.21799C18.4802 4 17.9201 4 16.8 4H7.2C6.0799 4 5.51984 4 5.09202 4.21799C4.71569 4.40973 4.40973 4.71569 4.21799 5.09202C4 5.51984 4 6.07989 4 7.2V16.8C4 17.9201 4 18.4802 4.21799 18.908C4.40973 19.2843 4.71569 19.5903 5.09202 19.782C5.51984 20 6.07989 20 7.2 20Z"
+                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M8 8H8.01M8 12H8.01M16 12H16.01M16 8H16.01M16 16H16.01M8 16H8.01" stroke-width="2.025"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
+            <button id="encrypt-selection" data-tooltip="Encrypt text (⌘⇧E / Ctrl+Shift+E)"
+                aria-label="Encrypt text (Cmd+Shift+E / Ctrl+Shift+E)" onclick="encryptCurrentText()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 32 32">
+                    <rect x="7" y="14" width="18" height="14" rx="2" stroke-width="2" />
+                    <path d="M11 14v-3a5 5 0 0 1 10 0v3" stroke-width="2" stroke-linecap="round" />
+                    <circle cx="16" cy="21" r="1.8" fill="currentColor" stroke="none" />
+                </svg>
+            </button>
+            <button id="generate-password" data-tooltip="Generate Password" aria-label="Generate Password"
+                onclick="generatePassword()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 32 32">
+                    <rect x="7" y="14" width="18" height="14" rx="2" stroke-width="2" />
+                    <path d="M11 14v-3a5 5 0 0 1 10 0v3" stroke-width="2" stroke-linecap="round" />
+                    <circle cx="16" cy="21" r="1.8" fill="currentColor" stroke="none" />
                 </svg>
             </button>
         </div>
-        <button id="close-chat" onclick="closeChatModal()" title="Close chat" style="display: none">×</button>
-        <button id="fullscreen-chat" onclick="openChat()" title="Toggle fullscreen" style="display: none">⛶</button>
+        <div id="tree">
+        </div>
+        <div id="open-folder" onclick="openDir()" title="Open folder" style="display: none">
+            <svg width="20" height="20" fill="none" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-width="2"
+                    d="M28 11v13a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h6c3 0 3 3 5 3h9.003C27.108 9 28 9.895 28 11z" />
+            </svg>
+            <span>Open folder</span>
+        </div>
     </div>
-</div>
 
-<div id="search" style="display: none;">
-    <form autocomplete="off">
-        <input type="text" id="search-input" placeholder="Go to file..." oninput="searchModal.search()">
-    </form>
-    <ul id="search-results"></ul>
-</div>
-<div id="move" style="display: none;">
-    <form autocomplete="off">
-        <input type="text" id="move-input" placeholder="Move to folder..." oninput="moveModal.suggestMove()">
-    </form>
-    <ul id="move-results"></ul>
-</div>
-<div id="sync-status" style="display: none"></div>
-<script src="editor.js?v="></script>
-<script src="app.js?v="></script>
-<script src="chat.js?v="></script>
-<script src="modals.js?v="></script>
-<script>
-    window.COMMIT_HASH = '?v=';
-    log('Current version:', window.COMMIT_HASH);
+    <div id="content">
+        <div id="editor-container">
+            <textarea id="editor-textarea" style="display: none"></textarea>
+        </div>
+        <div id="editor2-container" style="display: none">
+            <textarea id="editor2-textarea" style="display: none"></textarea>
+            <div id="nav-buttons">
+                <button id="go-backward" class="nav-button" onclick="goBack()" data-tooltip="Go Back (⌘[)"
+                    aria-label="Go Back (⌘[)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="none" viewBox="0 0 32 32">
+                        <path stroke-linecap="round" stroke-width="2.5" d="M6 16h21" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 8l-8 8 8 8" />
+                    </svg>
+                </button>
+                <button id="go-forward" class="nav-button" onclick="goForward()" data-tooltip="Go Forward (⌘])"
+                    aria-label="Go Forward (⌘])">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="none" viewBox="0 0 32 32">
+                        <path stroke-linecap="round" stroke-width="2.5" d="M5 16h21" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 8l8 8-8 8" />
+                    </svg>
+                </button>
+                <button id="close-editor2" onclick="hideEditor2()" data-tooltip="Close (Esc)"
+                    aria-label="Close split view">×</button>
+            </div>
+        </div>
+        <div id="chat-container" style="display: none">
+            <div id="chat" style="display: none;"></div>
+            <div id="chat-input-wrap" style="position: relative;">
+                <textarea id="chat-input" style="display: none;" class="input-field" placeholder="Dump your thoughts..."
+                    rows="1"></textarea>
+                <button id="mic-chat" onclick="toggleMicRecording()" title="Record voice message"
+                    aria-label="Record voice message" style="display: none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                        aria-hidden="true">
+                        <rect x="8" y="3" width="8" height="13" rx="4" />
+                        <path d="M5 12a7 7 0 0 0 14 0" />
+                        <line x1="12" y1="19" x2="12" y2="22" />
+                        <line x1="8" y1="22" x2="16" y2="22" />
+                    </svg>
+                </button>
+                <button id="send-chat" onclick="sendToChat()" title="Send" aria-label="Send" style="display: none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 32 32">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-width="3" d="M16 27V6" />
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                            d="M24 13l-8-8-8 8" />
+                    </svg>
+                </button>
+            </div>
+            <button id="close-chat" onclick="closeChatModal()" title="Close chat" style="display: none">×</button>
+            <button id="fullscreen-chat" onclick="openChat()" title="Toggle fullscreen" style="display: none">⛶</button>
+        </div>
+    </div>
 
-    // Allow offline mode.
-    navigator.serviceWorker?.register('offline.js?v=')
-        .then(() => log('Service Worker registered'))
-        .catch(() => logError('Service Worker registration failed'));
+    <div id="search" style="display: none;">
+        <form autocomplete="off">
+            <input type="text" id="search-input" placeholder="Go to file..." oninput="searchModal.search()">
+        </form>
+        <ul id="search-results"></ul>
+    </div>
+    <div id="move" style="display: none;">
+        <form autocomplete="off">
+            <input type="text" id="move-input" placeholder="Move to folder..." oninput="moveModal.suggestMove()">
+        </form>
+        <ul id="move-results"></ul>
+    </div>
+    <div id="sync-status" style="display: none"></div>
+    <script src="editorRR.js?v="></script>
+    <script src="editor.js?v="></script>
 
-    window.currentEditor = null;
-    editor = initEditor(document.getElementById("editor-textarea"));
-    init();
-    currentEditor = editor;
+    <script src="app.js?v="></script>
+    <script src="chat.js?v="></script>
+    <script src="modals.js?v="></script>
+    <script>
+        window.COMMIT_HASH = '?v=';
+        log('Current version:', window.COMMIT_HASH);
 
-    editor2 = initEditor(document.getElementById("editor2-textarea"));
-</script>
+        // Allow offline mode.
+        navigator.serviceWorker?.register('offline.js?v=')
+            .then(() => log('Service Worker registered'))
+            .catch(() => logError('Service Worker registration failed'));
+
+        window.currentEditor = null;
+        editor = initEditor(document.getElementById("editor-textarea"));
+        init();
+        currentEditor = editor;
+
+        editor2 = initEditor(document.getElementById("editor2-textarea"));
+    </script>
 </body>
+
 </html>

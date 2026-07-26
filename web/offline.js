@@ -54,6 +54,7 @@ const urlsToCache = [
     '/welcome.js',
     '/files.js',
     '/editor.js',
+    '/editorRR.js',
     '/chat.js',
     '/modals.js',
     '/lib/latex/fold-math.js',

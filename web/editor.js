@@ -551,6 +551,7 @@ async function encryptCurrentText() {
     cm.focus();
 }
 
+
 // Focus last line before the links.
 function focusLastLine() {
     let lastLine = currentEditor.lastLine();
