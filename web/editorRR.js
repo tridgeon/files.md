@@ -101,7 +101,8 @@ async function LettersReplace(text) {
 async function loadPasswordWords() {
     const memFile = getMemFile(PASSWORD_WORDS_PATH);
     if (!memFile) {
-        throw new Error('passwordwords.md not found');
+        return null
+        //throw new Error('passwordwords.md not found');
     }
 
     let content;
