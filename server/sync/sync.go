@@ -35,6 +35,7 @@ type file struct {
 	ClientLastModified int64  `json:"clientLastModified,omitempty"`
 	ClientLastSynced   int64  `json:"clientLastSynced,omitempty"`
 	Content            string `json:"content"`
+	RootDir            string `json:"rootDir"`
 }
 
 type syncRequest struct {
@@ -42,6 +43,7 @@ type syncRequest struct {
 	Deleted    []string         `json:"deleted"`  // Deleted files from client
 	Timestamps map[string]int64 `json:"timestamps"`
 	ServerTime int64            `json:"serverTime"` // latest server-event ts the client has acknowledged; server returns events newer than this
+	RootDir    string           `json:"rootDir"`    // For local files, the root dir name on client
 }
 
 type syncResponse struct {
@@ -76,7 +78,8 @@ func SyncFilenames(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userFS, err := fs.NewUserFS(userID(r))
+	//userFS, err := fs.NewUserFS(userID(r))
+	userFS, err := fs.NewUserFSroot(userID(r), request.RootDir)
 	if err != nil {
 		slog.Error("Sync error: syncTexts: error creating user FS", "error", err)
 		http.Error(w, "Error creating user FS", http.StatusInternalServerError)
@@ -278,7 +281,8 @@ func SyncFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userFS, err := fs.NewUserFS(userID(r))
+	//userFS, err := fs.NewUserFS(userID(r))
+	userFS, err := fs.NewUserFSroot(userID(r), clientFile.RootDir)
 	if err != nil {
 		slog.Error("Sync error: syncText: error creating user FS", "error", err)
 		http.Error(w, "Error creating user FS", http.StatusInternalServerError)

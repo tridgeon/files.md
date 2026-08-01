@@ -10,6 +10,7 @@
 
 // User can set his own server apiUrl through localstorage.
 const API_URL = localStorage.getItem('apiUrl') || document.location.protocol + '//' + document.location.host;
+localStorage.setItem('apiUrl', API_URL);
 const CURRENT_FILE_SYNC_INTERVAL = 1000; // ms, how often to save currently open file
 // Matches server's MaxMediaSize (server/sync/sync.go). Server caps the JSON
 // request body, which holds base64 (~33% inflation), so the effective raw
@@ -309,11 +310,14 @@ async function syncFilesWithServer() {
     } else {
         log('NEVER SYNCED BEFORE');
     }
+
+    let rootDirHandle = await getRootDirHandle();
     const { json: response, error } = await post('syncFilenames', {
         modified: modified,
         deleted: deleted,
         timestamps: server['timestamps'] || [],
         serverTime: server['serverTime'] || 0,
+        rootDir: rootDirHandle.name,
     });
     if (error) {
         logError('syncFilenames failed:', error);
@@ -442,8 +446,9 @@ async function syncLocalFileWithServer(path) {
         // TODO we might only need to send content when modifying
         let content = await file.text();
         let serverTimestamp = getServerFile(path)?.lastModified || 0;
-
+        
         let serverFile = {};
+        let rootDirHandle = await getRootDirHandle();
         const clientLastModified = file.lastModified;
         const { json, error } = await post('syncFile', {
             path: path,
@@ -453,6 +458,7 @@ async function syncLocalFileWithServer(path) {
             // decide whether the file was modified on client or not.
             clientLastSynced: getServerFile(path)?.lastClientModified || 0,
             content: content,
+            rootDir: rootDirHandle.name,
         });
         if (error) {
             logError(`syncText ${path} failed:`, error);
@@ -538,11 +544,16 @@ async function syncMediaFiles() {
     }
 
     isSyncingMedia = true;
-
+    let rootDirHandle = await getRootDirHandle();
     const startTime = performance.now();
+    let hasFullySyncedFilesAtLeastOnce = server['mediaTimestamp'] !== undefined && Object.keys(server['mediaTimestamp']).length > 0;
+    // MEH i dont knwo just sync atlease once and set the media stamp jeeez
+    if (!hasFullySyncedFilesAtLeastOnce) {
+        server['mediaTimestamp'] = 1;
+    }
 
     const mediaTimestamp = server['mediaTimestamp'] || 0;
-    if (mediaTimestamp !== 0) {
+    if (mediaTimestamp !== 0 ) {
         // Send new files from client to server
         let newMedias = await collectNewMediaFiles();
         for (const mediaFilename of newMedias) {
@@ -574,6 +585,8 @@ async function syncMediaFiles() {
                     body: JSON.stringify({
                         filename: mediaFilename,
                         data: base64String,
+                        rootDir: rootDirHandle.name,
+
                     }),
                 });
                 if (!response.ok) {
@@ -620,7 +633,8 @@ async function syncMediaFiles() {
                     },
                     body: JSON.stringify({
                         filename: filename,
-                        timestamp: mediaTimestamp
+                        timestamp: mediaTimestamp,
+                        rootDir: rootDirHandle.name,
                     })
                 });
                 if (!response.ok) {
@@ -652,7 +666,7 @@ async function saveMediaFile(path, blob, lastModified) {
         log(`Malformed name for ${path}, skipping file...`);
         return;
     }
-
+    let rootDirHandle = await getRootDirHandle();
     // Check if file exists already
     try {
         const file = await fileHandle.getFile();

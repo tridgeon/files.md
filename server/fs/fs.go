@@ -26,10 +26,10 @@ import (
 )
 
 var (
-	NewUserFS = newUserFS
-
-	LogRename = func(time int64, oldPath, newPath string) {} // callback to track renames
-	LogDelete = func(time int64, path string) {}             // callback to track deletes
+	NewUserFS     = newUserFS
+	NewUserFSroot = newUserFSroot
+	LogRename     = func(time int64, oldPath, newPath string) {} // callback to track renames
+	LogDelete     = func(time int64, path string) {}             // callback to track deletes
 
 	ErrQuotaExceeded = errors.New("storage quota exceeded")
 	ErrUnsafePath    = errors.New("unsafe path, possible security issue")
@@ -92,6 +92,17 @@ func newUserFS(userID int64) (*FS, error) {
 	return NewFS(userAbsPath, backend, quotaKB)
 }
 
+func newUserFSroot(userID int64, rootfolder string) (*FS, error) {
+	userAbsPath := path.Join(config.ServerCfg.StorageDir, txt.I64(userID), rootfolder)
+	backend := afero.NewOsFs()
+
+	quotaKB := config.ServerCfg.StorageQuotaKB
+	if isUnlimitedQuota(userID, config.ServerCfg.UnlimitedQuotaIDs) {
+		quotaKB = 0
+	}
+
+	return NewFS(userAbsPath, backend, quotaKB)
+}
 func NewFS(absRootPath string, backend afero.Fs, quotaKB ...int64) (*FS, error) {
 	exists, err := afero.Exists(backend, absRootPath)
 	if err != nil {
@@ -186,17 +197,17 @@ func (fs FS) Write(dir, filename, content string) error {
 	if err != nil {
 		return fmt.Errorf("fs write: unsafe filePath '%s': %w", filepath.Join(dir, filename), ErrUnsafePath)
 	}
-	
+
 	sep := ""
-	if strings.Contains(filePath,"\\") == true {
-		sep="\\"
-	}else{
-		sep="/"
+	if strings.Contains(filePath, "\\") == true {
+		sep = "\\"
+	} else {
+		sep = "/"
 	}
 
 	dirs := strings.Split(filePath, sep)
 	dirs = dirs[:len(dirs)-1]
-	pathToDir := strings.Join(dirs, sep	)
+	pathToDir := strings.Join(dirs, sep)
 	//userPath := path.Join(fs.rootPath, dir)
 	//pathToDir:= path.Join(fs.rootPath, pathToDir)
 	if err := fs.backend.MkdirAll(pathToDir, 0o755); err != nil {

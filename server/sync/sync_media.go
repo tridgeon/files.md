@@ -20,12 +20,14 @@ const (
 var syncMediasRequest struct {
 	Timestamp     int64  `json:"timestamp"`
 	FilenamesHash string `json:"filenamesHash"`
+	RootDir       string `json:"rootDir"`
 }
 
 type media struct {
 	Filename     string `json:"filename"`
 	LastModified int64  `json:"lastModified"`
 	Data         string `json:"data"`
+	RootDir      string `json:"rootDir"`
 }
 
 func SyncMediaFilenames(w http.ResponseWriter, r *http.Request) {
@@ -41,7 +43,7 @@ func SyncMediaFilenames(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userFS, err := fs.NewUserFS(userID(r))
+	userFS, err := fs.NewUserFSroot(userID(r), syncMediasRequest.RootDir)
 	if err != nil {
 		slog.Error("Sync error: syncMedias: error creating media FS", "error", err)
 		http.Error(w, "Error creating media FS", http.StatusInternalServerError)
@@ -109,7 +111,7 @@ func SyncMediaFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userFS, err := fs.NewUserFS(userID(r))
+	userFS, err := fs.NewUserFSroot(userID(r), clientMedia.RootDir)
 	if err != nil {
 		slog.Error("Sync error: syncMedia: error creating user FS", "error", err)
 		http.Error(w, "Error creating user FS", http.StatusInternalServerError)
