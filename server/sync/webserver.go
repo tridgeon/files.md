@@ -126,9 +126,11 @@ func router(serverLogger *log.Logger) *http.ServeMux {
 		}
 
 		// Serving the PWA app
-		if appHost := config.ServerCfg.AppHost(); appHost != "" && r.Host == appHost {
+		if appHost := config.ServerCfg.AppHost(); appHost != "" && (r.Host == appHost || strings.Contains(r.Host, "md.lan")) {
 			http.FileServer(http.Dir("./web")).ServeHTTP(w, r)
 			return
+		} else {
+			serverLogger.Printf("❌ Request to unknown host: %s", r.Host)
 		}
 
 		http.NotFound(w, r)
