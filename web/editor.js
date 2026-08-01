@@ -263,7 +263,20 @@ function initEditor(el) {
 
     // Image upload
     newEditor.on('paste', async (_, event) => {
-        const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+        const clipboard = event.clipboardData || event.originalEvent.clipboardData;
+
+        // Paste a URL onto selected text -> [selection](url).
+        if (newEditor.somethingSelected()) {
+            const pasted = (clipboard.getData('text') || '').trim();
+            if (/^https?:\/\/\S+$/.test(pasted)) {
+                event.preventDefault();
+                const sel = newEditor.getSelection();
+                newEditor.replaceSelection(`[${sel}](${encodeLinkPath(pasted)})`);
+                return;
+            }
+        }
+
+        const items = clipboard.items;
         for (const item of items) {
             const isMedia = item.kind === 'file'
                 && (item.type.startsWith('image/') || item.type.startsWith('video/') || item.type.startsWith('audio/'));

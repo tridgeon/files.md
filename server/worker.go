@@ -138,27 +138,33 @@ func MoveDueTasks(
 				continue
 			}
 
-			bot := NewBot(userID, telegram, userFS, db.NewDB(userID), userconf)
-			_, err := bot.appendToChat(schedule.Filename, userconf.Timezone())
-			if err != nil {
-				slog.Error("schedule worker: can't append to inbox", "err", err)
-				continue
-			}
-			// Remove the task from Done.md / Later.md so it doesn't linger as a duplicate.
-			if doneMD, rerr := userFS.Read(fs.DirArchive, fs.DoneFilename); rerr == nil {
-				if reduced, _ := txt.RemoveChecklistItem(doneMD, schedule.Filename); reduced != doneMD {
-					_ = userFS.Write(fs.DirArchive, fs.DoneFilename, reduced)
+			// Skip the append if an identical incomplete entry is already in
+			// the inbox (a recurring task the user hasn't dealt with yet), so a
+			// daily schedule doesn't pile up duplicates. Mirrors the dedup in
+			// txt.AddChecklistItem. The reschedule below still runs.
+			chatMD, _ := userFS.Read(fs.DirUserRoot, fs.ChatFilename)
+			if !txt.ContainsIncompleteChecklistItem(chatMD, schedule.Filename) {
+				bot := NewBot(userID, telegram, userFS, db.NewDB(userID), userconf)
+				if _, err := bot.appendToChat(schedule.Filename, userconf.Timezone()); err != nil {
+					slog.Error("schedule worker: can't append to inbox", "err", err)
+					continue
 				}
-			}
-			if laterMD, rerr := userFS.Read(fs.DirUserRoot, fs.LaterFilename); rerr == nil {
-				if reduced, _ := txt.RemoveChecklistItem(laterMD, schedule.Filename); reduced != laterMD {
-					_ = userFS.Write(fs.DirUserRoot, fs.LaterFilename, reduced)
+				// Remove the task from Done.md / Later.md so it doesn't linger as a duplicate.
+				if doneMD, rerr := userFS.Read(fs.DirArchive, fs.DoneFilename); rerr == nil {
+					if reduced, _ := txt.RemoveChecklistItem(doneMD, schedule.Filename); reduced != doneMD {
+						_ = userFS.Write(fs.DirArchive, fs.DoneFilename, reduced)
+					}
 				}
+				if laterMD, rerr := userFS.Read(fs.DirUserRoot, fs.LaterFilename); rerr == nil {
+					if reduced, _ := txt.RemoveChecklistItem(laterMD, schedule.Filename); reduced != laterMD {
+						_ = userFS.Write(fs.DirUserRoot, fs.LaterFilename, reduced)
+					}
+				}
+
+				infolog.Info("scheduled task moved to inbox", schedule.Filename, "filename")
+
+				_ = bot.ShowHome(nil)
 			}
-
-			infolog.Info("scheduled task moved to inbox", schedule.Filename, "filename")
-
-			_ = bot.ShowHome(nil)
 
 			if len(schedule.Cron) != 0 {
 				nextScheduledAt := NextExcludeToday(schedule.Cron)

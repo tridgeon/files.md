@@ -242,6 +242,22 @@ func ChecklistItem(md, itemOrHash string) string {
 	return ""
 }
 
+// ContainsIncompleteChecklistItem reports whether md has an unchecked item
+// whose content (ignoring a leading chat timestamp) equals item.
+func ContainsIncompleteChecklistItem(md, item string) bool {
+	for _, line := range strings.Split(md, "\n") {
+		line = strings.TrimSpace(line)
+		if !strings.HasPrefix(line, "- [ ] ") {
+			continue
+		}
+		content := StripChatTimestamp(strings.TrimPrefix(line, "- [ ] "))
+		if strings.TrimSpace(content) == item {
+			return true
+		}
+	}
+	return false
+}
+
 // MarkdownToHTML naively converts user's markdown to Telegram-supported subset of HTML.
 // We don't need to implement full-blown AST parser because TG only supports a few HTML tags.
 // Telegram supports the following HTML tags:

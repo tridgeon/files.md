@@ -350,6 +350,38 @@ func TestAddChecklistItemRemovesDuplicate(t *testing.T) {
 	r.Equal("other text\n- [x] existing task", result)
 }
 
+func TestContainsIncompleteChecklistItemPresent(t *testing.T) {
+	r := require.New(t)
+
+	md := "- [ ] Water plants\n- [ ] Read book"
+
+	r.True(ContainsIncompleteChecklistItem(md, "Water plants"))
+}
+
+func TestContainsIncompleteChecklistItemWithChatTimestamp(t *testing.T) {
+	r := require.New(t)
+
+	md := "#### 28 Jul, Monday\n- [ ] `09:00` Water plants"
+
+	r.True(ContainsIncompleteChecklistItem(md, "Water plants"))
+}
+
+func TestContainsIncompleteChecklistItemCompletedIsNotPresent(t *testing.T) {
+	r := require.New(t)
+
+	md := "- [x] `09:00` Water plants"
+
+	r.False(ContainsIncompleteChecklistItem(md, "Water plants"))
+}
+
+func TestContainsIncompleteChecklistItemAbsent(t *testing.T) {
+	r := require.New(t)
+
+	md := "- [ ] Read book"
+
+	r.False(ContainsIncompleteChecklistItem(md, "Water plants"))
+}
+
 func TestCompleteChecklistItem(t *testing.T) {
 	r := require.New(t)
 

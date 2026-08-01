@@ -1,6 +1,7 @@
 package server
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -138,6 +139,42 @@ func TestMoveDueTasksFromArchive(t *testing.T) {
 	sc, err = cfg.Schedules()
 	r.NoError(err)
 	r.Empty(sc)
+}
+
+func TestMoveDueTasksSkipsDuplicateAlreadyInInbox(t *testing.T) {
+	r := require.New(t)
+
+	savedNow := now
+	defer func() { now = savedNow }()
+	now = func() time.Time {
+		return time.Date(1970, 1, 2, 0, 0, 0, 0, time.UTC)
+	}
+
+	fsBackend := afero.NewMemMapFs()
+	userFS, err := fs.NewFS("/-1", fsBackend)
+	r.NoError(err)
+	r.NoError(userFS.CreateSystemDirs())
+
+	// The recurring task is already sitting in the inbox, unhandled.
+	_ = userFS.Write(fs.DirUserRoot, fs.ChatFilename, "- [ ] `09:00` daily task.md")
+
+	cfg := userconfig.NewConfig(userFS, -1, "config.json")
+	_ = cfg.CreateDefaultIfNotExists()
+	_ = cfg.AddToSchedule("daily task.md", 0, "0 0 * * *") // due now, daily
+
+	tgram := tg.NewFakeTG()
+	r.NoError(MoveDueTasks("/", "config.json", fsBackend, tgram))
+
+	// Not appended a second time.
+	inboxMD, err := userFS.Read(fs.DirUserRoot, fs.ChatFilename)
+	r.NoError(err)
+	r.Equal(1, strings.Count(inboxMD, "daily task.md"))
+
+	// Still rescheduled for the next day despite the skipped append.
+	sc, err := cfg.Schedules()
+	r.NoError(err)
+	r.Len(sc, 1)
+	r.Greater(sc[0].ScheduledAt, int64(0))
 }
 
 func TestMoveDueTasksFromLater(t *testing.T) {

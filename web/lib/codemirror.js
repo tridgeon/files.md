@@ -6367,6 +6367,13 @@
       var view = findViewForLine(cm, lineN);
       if (view) {
         clearLineMeasurementCacheFor(view);
+        // PATCHED: an inline replaced marker (fold-image video/image) has no
+        // widget.height, so the height block below is skipped and the line's
+        // real height is only learned by re-measuring in updateHeightsInViewport.
+        // That pass skips off-screen lines unless mustMeasure is set - so a
+        // video/image loading while scrolled away would leave the height model
+        // stale, misplacing the cursor after a jump (goDocEnd). Force a measure.
+        view.mustMeasure = true;
         cm.curOp.selectionChanged = cm.curOp.forceUpdate = true;
       }
       cm.curOp.updateMaxLine = true;

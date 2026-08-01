@@ -40,11 +40,20 @@ chat.addEventListener('mouseover', function (e) {
 });
 
 async function sendToChat() {
-    const text = chatInput.value.trim();
+    let text = chatInput.value.trim();
     if (!text) return;
 
-    if (text.toLowerCase().endsWith(' jj') || text.toLowerCase().endsWith(' жж')) {
-        await addToJournal(text.slice(0, -3).trim());
+    // jj/жж: journal only. jd/жд: journal and keep in chat.
+    const lower = text.toLowerCase();
+    const toJournalOnly = lower.endsWith(' jj') || lower.endsWith(' жж');
+    const toJournalAndChat = lower.endsWith(' jd') || lower.endsWith(' жд');
+
+    if (toJournalOnly || toJournalAndChat) {
+        text = text.slice(0, -3).trim();
+        await addToJournal(text);
+    }
+
+    if (toJournalOnly) {
         chatInput.value = '';
         chatIsClean = false;
         // Reload from disk so the journal file/dir created by addToJournal
@@ -73,6 +82,12 @@ async function sendToChat() {
         allMessages[allMessages.length - 1].classList.add('actions-shown');
     }
     scrollToBottom();
+
+    if (toJournalAndChat) {
+        // Reload from disk so the journal file/dir shows up, then blink its row.
+        files = await loadLocalFiles(await getRootDirHandle());
+        renderSidebar('', [`/journal/${todayJournalFilename()}`]);
+    }
 }
 
 // Voice recording. First click starts capture, second click stops, saves to
