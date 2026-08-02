@@ -4084,7 +4084,7 @@ func TestSaveFromImage_MultilineCaption(t *testing.T) {
 	err = bot.Reply(tg.NewUpdCmd(-1, tg.NewCmd("mv", []string{"4358b5009c6", inboxMsgHash(t, userFS, 0)})))
 	r.NoError(err)
 
-	filename := fmt.Sprintf("Abc.md")
+	filename := "Abc.md"
 	content, err = bot.fs.Read("notes", filename)
 	r.NoError(err)
 	r.Equal("![](media/tg_PHOTO_ID)\nAbc\ndef", content)

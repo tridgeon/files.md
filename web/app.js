@@ -26,6 +26,7 @@ async function init() {
         log('Storage persisted:', persisted);
     }
 
+
     // Authorize if we have one-time token in URL.
     const urlParams = new URLSearchParams(window.location.search);
     const oneTimeToken = urlParams.get('token');
@@ -44,6 +45,22 @@ async function init() {
             });
 
             if (response.ok) {
+                // New UserID/Token so we clean our server files "understanding".
+                // If a local folder has been picked arelady then it will sync new userid/server so you could end up with a user vainf the same files as another user but  well
+                server = { files: {}, media: {}, timestamps: {}, mediaTimestamp: 0 };
+                localStorage.removeItem("server");
+               
+
+                // decided to remove the directory handle for now. as sort of odd syncing the files when you change userid
+                await removeSavedRootDirHandle();
+                //onst deleteRequest = indexedDB.deleteDatabase("files");
+                //deleteRequest.onsuccess = () => console.log("Database deleted");
+                //deleteRequest.onerror = () => console.log("Error deleting database");
+                const dbs = await window.indexedDB.databases()
+                dbs.forEach(db => { console.log("Deleting database:", db.name); window.indexedDB.deleteDatabase(db.name) })
+                // celar the storage so that we don't have any files left over from the previous user
+                await (await navigator.storage.getDirectory()).remove({ recursive: true });
+
                 // Server sets the auth cookie via Set-Cookie on this response.
                 markServerOk();
                 const url = new URL(window.location);
@@ -73,7 +90,7 @@ async function init() {
         isMemFS = true;
     }
 
-   
+
     // Let's create local-first like experience by preloading images.
     if (isMemFS) {
         prefetchWelcomeImages();
@@ -307,7 +324,7 @@ async function openDir() {
     // New folder would miss files that were synced from server before,
     // into a previous folder. That would send a signal to server "client has deleted some files".
     // Which we do not want, so we clean our server files "understanding".
-    server = {files: {}, media: {}, timestamps: {}, mediaTimestamp: 0};
+    server = { files: {}, media: {}, timestamps: {}, mediaTimestamp: 0 };
     localStorage.removeItem("server");
 
     await saveDirectoryHandle(dirHandle);
@@ -627,7 +644,7 @@ async function post(endpoint, data) {
 
     if (!response.ok) {
         let body = '';
-        try { body = await response.text(); } catch (_) {}
+        try { body = await response.text(); } catch (_) { }
         return { json: null, error: `${response.status} ${response.statusText}: ${body}`.trim() };
     }
     markServerOk();
@@ -812,7 +829,7 @@ document.addEventListener('keydown', (event) => {
 });
 
 // Toggle focus mode
-document.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', function (event) {
     // Cmd+shift+enter toggle chat modal.
     if (event.shiftKey && isMetaKey(event) && event.key === 'Enter') {
         event.preventDefault();
@@ -894,7 +911,7 @@ window.addEventListener('focus', async () => {
 });
 
 // Sync files on chat focus lose.
-window.addEventListener('blur', async function() {
+window.addEventListener('blur', async function () {
     log('BLUR');
     editor.refresh();
 
@@ -935,7 +952,7 @@ document.addEventListener('keydown', (e) => {
     }
 }, true);
 
-window.addEventListener('beforeunload', function() {
+window.addEventListener('beforeunload', function () {
     clearInterval(window.saver);
 });
 

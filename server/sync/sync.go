@@ -405,7 +405,7 @@ func SyncFile(w http.ResponseWriter, r *http.Request) {
 }
 
 func logSync(msg string, r *http.Request) {
-	msg = fmt.Sprintf("%d: %s", userID(r), msg)
+	msg = fmt.Sprintf("%s: %s", userID(r), msg)
 
 	file, err := os.OpenFile("/tmp/sync", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
@@ -428,7 +428,7 @@ func logSync(msg string, r *http.Request) {
 }
 
 func debugLogDelete(msg string, r *http.Request) {
-	msg = fmt.Sprintf("%d: %s", userID(r), msg)
+	msg = fmt.Sprintf("%s: %s", userID(r), msg)
 	file, err := os.OpenFile("/tmp/del", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		slog.Error("Sync error: logDelete: error opening log file", "error", err)

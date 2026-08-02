@@ -70,7 +70,7 @@ func RenamesLog(userID string, afterTimestamp int64) map[string]string {
 
 	logEntries := make(map[string]string)
 	scanner := bufio.NewScanner(file)
-	userPathPrefix := path.Join(config.ServerCfg.StorageDir, fmt.Sprintf("%d", userID)) + "/"
+	userPathPrefix := path.Join(config.ServerCfg.StorageDir, fmt.Sprintf("%s", userID)) + "/"
 	for scanner.Scan() {
 		line := scanner.Text()
 		var timestamp int64
@@ -123,7 +123,7 @@ func DeletesLog(userID string, afterTimestamp int64) map[string]int64 {
 
 	logEntries := make(map[string]int64)
 	scanner := bufio.NewScanner(file)
-	userPathPrefix := path.Join(config.ServerCfg.StorageDir, fmt.Sprintf("%d", userID)) + "/"
+	userPathPrefix := path.Join(config.ServerCfg.StorageDir, fmt.Sprintf("%s", userID)) + "/"
 	for scanner.Scan() {
 		line := scanner.Text()
 		var timestamp int64

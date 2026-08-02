@@ -17,7 +17,7 @@ async function getTemporaryStorageDirHandle() {
     // OPFS requires a secure context (https or localhost), not available on file://
     try {
         const root = await navigator.storage.getDirectory();
-
+        
         // Skip the seed only when the LAST welcome file is already on disk.
         // Using "any entries" as the seeded marker is racy: a reader
         // arriving mid-seed sees the first dir already written and returns

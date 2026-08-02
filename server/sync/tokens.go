@@ -58,13 +58,13 @@ func GenOneToken(w http.ResponseWriter, r *http.Request) {
 	userIDStr := r.URL.Query().Get("userid")
 	//userID, _ := strconv.ParseInt(userIDStr, 10, 64)
 	token := GenOneTimeToken(userIDStr) // TODO: replace with actual user ID
-	onetimeURL := fmt.Sprintf("%s?token=%s", config.ServerCfg.AppURL, token)
+	onetimeURL := fmt.Sprintf("https://%s?token=%s", r.Host, token)
+	onetimeURL = "<a href=\"" + onetimeURL + "\">" + onetimeURL + "</a>"
 	w.Write([]byte(onetimeURL))
 }
 
 func GetUserID(w http.ResponseWriter, r *http.Request) {
 	var token string
-
 	if cookie, err := r.Cookie(AuthCookieName); err == nil && cookie.Value != "" {
 		token = cookie.Value
 	}
@@ -227,7 +227,7 @@ func issueNewPermanentToken(r *http.Request) (string, bool) {
 			}
 			if len(samplePrefixes) < 5 {
 				samplePrefixes = append(samplePrefixes,
-					fmt.Sprintf("%s(uid=%d,exp=%s)", tokenFingerprint(tok), d.userID, d.expiresAt.Format(time.RFC3339)))
+					fmt.Sprintf("%s(uid=%s,exp=%s)", tokenFingerprint(tok), d.userID, d.expiresAt.Format(time.RFC3339)))
 			}
 		}
 		mu.Unlock()

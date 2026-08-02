@@ -1,5 +1,5 @@
 
-const PASSWORD_WORDS_PATH = '/passwordwords.md';
+const PASSWORD_WORDS_PATH = '/PasswordWords.md';
 
 async function generatePassword() {
     try {
