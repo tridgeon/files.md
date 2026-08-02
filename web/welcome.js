@@ -26,8 +26,12 @@ async function getTemporaryStorageDirHandle() {
         // via {create:true}) and none of them returns until all welcome
         // files exist.
         const lastFile = Object.keys(WELCOME_FILES).pop();
+
         let seeded = true;
-        try { await root.getFileHandle(lastFile); }
+        try {
+            var welcomFolder = await root.getDirectoryHandle('FilesMD-Welcome');
+            await welcomFolder.getFileHandle(lastFile);
+        }
         catch { seeded = false; }
 
         if (seeded) {
@@ -59,12 +63,12 @@ async function getTemporaryStorageDirHandle() {
                 }
             }
         }
-        await createFiles(WELCOME_FILES, root);
-
+        await createFiles(WELCOME_FILESFOLDER, root);
+        welcomFolder = await root.getDirectoryHandle('FilesMD-Welcome');
         // Retouch My project.md file, so it appears in chat's quick buttons for better demo.
         if (!archived.has('My Project.md')) {
             await new Promise(r => setTimeout(r, 10));
-            const fh = await root.getFileHandle('My Project.md', { create: true });
+            const fh = await welcomFolder.getFileHandle('My Project.md', { create: true });
             const w = await fh.createWritable();
             await w.write(WELCOME_FILES['My Project.md'].content);
             await w.close();
@@ -262,7 +266,7 @@ function prefetchWelcomeImages() {
     }
 }
 
-const WELCOME_FILES = {
+const WELCOME_FILESFOLDER = {
     "FilesMD-Welcome/": {
         "brain/": {
             "We think that we understand, but in reality we just know.md": {
@@ -412,6 +416,8 @@ const WELCOME_FILES = {
         },
     }
 }
+
+const WELCOME_FILES = WELCOME_FILESFOLDER["FilesMD-Welcome/"];
 
 function getHelpContent() {
     // Concatenate Hotkeys and Markdown Guide into one Help.md. Drop any
