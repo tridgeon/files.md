@@ -2,7 +2,7 @@ package fs
 
 import (
 	"os"
-	"strconv"
+	//"strconv"
 	"strings"
 	"sync"
 
@@ -57,16 +57,14 @@ func checkQuota(rootPath string, backend afero.Fs, quotaKB int64, contentSize in
 	return nil
 }
 
-func isUnlimitedQuota(userID int64, unlimitedIDs string) bool {
+func isUnlimitedQuota(userID string, unlimitedIDs string) bool {
 	if unlimitedIDs == "" {
 		return false
 	}
 
 	for _, idStr := range strings.Split(unlimitedIDs, ",") {
-		id, err := strconv.ParseInt(strings.TrimSpace(idStr), 10, 64)
-		if err != nil {
-			continue
-		}
+		id := strings.TrimSpace(idStr)
+
 		if id == userID {
 			return true
 		}

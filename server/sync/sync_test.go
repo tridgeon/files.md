@@ -29,7 +29,7 @@ func TestSyncText_CreateNewFileOnServer(t *testing.T) {
 	r := require.New(t)
 
 	origFS := fs.NewUserFS
-	fs.NewUserFS = func(userID int64) (*fs.FS, error) {
+	fs.NewUserFS = func(userID string) (*fs.FS, error) {
 		return fs.NewFS("/", afero.NewMemMapFs())
 
 	}
@@ -67,7 +67,7 @@ func TestSyncText_UpdateExistingFile_NoConflict(t *testing.T) {
 	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
 	r.NoError(err)
 	origFS := fs.NewUserFS
-	fs.NewUserFS = func(userID int64) (*fs.FS, error) {
+	fs.NewUserFS = func(userID string) (*fs.FS, error) {
 		return userFS, nil
 	}
 	defer func() {
@@ -112,7 +112,7 @@ func TestSyncText_NotModified(t *testing.T) {
 	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
 	r.NoError(err)
 	origFS := fs.NewUserFS
-	fs.NewUserFS = func(userID int64) (*fs.FS, error) {
+	fs.NewUserFS = func(userID string) (*fs.FS, error) {
 		return userFS, nil
 	}
 	defer func() {
@@ -157,7 +157,7 @@ func TestSyncText_UpdateExistingFile_Conflict(t *testing.T) {
 	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
 	r.NoError(err)
 	origFS := fs.NewUserFS
-	fs.NewUserFS = func(userID int64) (*fs.FS, error) {
+	fs.NewUserFS = func(userID string) (*fs.FS, error) {
 		return userFS, nil
 	}
 	defer func() {
@@ -202,7 +202,7 @@ func TestSyncText_UpdateExistingFile_JournalConflict(t *testing.T) {
 	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
 	r.NoError(err)
 	origFS := fs.NewUserFS
-	fs.NewUserFS = func(userID int64) (*fs.FS, error) {
+	fs.NewUserFS = func(userID string) (*fs.FS, error) {
 		return userFS, nil
 	}
 	defer func() {
@@ -253,7 +253,7 @@ func TestSyncAllTexts_EmptyRequest(t *testing.T) {
 	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
 	r.NoError(err)
 	origFS := fs.NewUserFS
-	fs.NewUserFS = func(userID int64) (*fs.FS, error) {
+	fs.NewUserFS = func(userID string) (*fs.FS, error) {
 		return userFS, nil
 	}
 	defer func() {
@@ -297,7 +297,7 @@ func TestSyncAllTexts_CreateNewFilesOnServer(t *testing.T) {
 	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
 	r.NoError(err)
 	origFS := fs.NewUserFS
-	fs.NewUserFS = func(userID int64) (*fs.FS, error) {
+	fs.NewUserFS = func(userID string) (*fs.FS, error) {
 		return userFS, nil
 	}
 	defer func() {
@@ -357,7 +357,7 @@ func TestSyncAllTexts_UpdateExistingFilesOnServer(t *testing.T) {
 	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
 	r.NoError(err)
 	origFS := fs.NewUserFS
-	fs.NewUserFS = func(userID int64) (*fs.FS, error) {
+	fs.NewUserFS = func(userID string) (*fs.FS, error) {
 		return userFS, nil
 	}
 	defer func() {
@@ -415,7 +415,7 @@ func TestSyncAllTexts_SendUpdatedFilesToClient(t *testing.T) {
 	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
 	r.NoError(err)
 	origFS := fs.NewUserFS
-	fs.NewUserFS = func(userID int64) (*fs.FS, error) {
+	fs.NewUserFS = func(userID string) (*fs.FS, error) {
 		return userFS, nil
 	}
 	defer func() {

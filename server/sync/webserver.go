@@ -21,6 +21,7 @@ import (
 	"github.com/zakirullin/files.md/server/fs"
 	"github.com/zakirullin/files.md/server/habits"
 	"github.com/zakirullin/files.md/server/journal"
+	"github.com/zakirullin/files.md/server/pkg/txt"
 	"github.com/zakirullin/files.md/server/userconfig"
 )
 
@@ -164,7 +165,7 @@ func router(serverLogger *log.Logger) *http.ServeMux {
 			return
 		}
 
-		userFS, err := fs.NewUserFS(userID)
+		userFS, err := fs.NewUserFS(txt.I64(userID))
 		if err != nil {
 			serverLogger.Printf("failed to init userFS: %v", err)
 			http.Error(w, "can't init userFS", http.StatusInternalServerError)
@@ -208,7 +209,7 @@ func router(serverLogger *log.Logger) *http.ServeMux {
 
 		habitName := r.PathValue("habitName")
 
-		userFS, err := fs.NewUserFS(userID)
+		userFS, err := fs.NewUserFS(txt.I64(userID))
 		if err != nil {
 			serverLogger.Printf("failed to init user fs: %v", err)
 			http.Error(w, "can't init user fs", http.StatusInternalServerError)

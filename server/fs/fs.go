@@ -80,8 +80,8 @@ type File struct {
 }
 
 // newUserFS creates a new FS for a specific user with os.FS backend.
-func newUserFS(userID int64) (*FS, error) {
-	userAbsPath := path.Join(config.ServerCfg.StorageDir, txt.I64(userID))
+func newUserFS(userID string) (*FS, error) {
+	userAbsPath := path.Join(config.ServerCfg.StorageDir, userID)
 	backend := afero.NewOsFs()
 
 	quotaKB := config.ServerCfg.StorageQuotaKB
@@ -92,11 +92,11 @@ func newUserFS(userID int64) (*FS, error) {
 	return NewFS(userAbsPath, backend, quotaKB)
 }
 
-func newUserFSroot(userID int64, rootfolder string) (*FS, error) {
+func newUserFSroot(userID string, rootfolder string) (*FS, error) {
 
 	// disabled for now as I am not 100% sure about it seems sort of okay but its ODD
 	if false {
-		userAbsPath := path.Join(config.ServerCfg.StorageDir, txt.I64(userID), rootfolder)
+		userAbsPath := path.Join(config.ServerCfg.StorageDir, userID, rootfolder)
 		backend := afero.NewOsFs()
 
 		quotaKB := config.ServerCfg.StorageQuotaKB

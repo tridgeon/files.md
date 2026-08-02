@@ -57,7 +57,7 @@ func LogDelete(time int64, filepath string) {
 // RenamesLog reads the file system renames log and returns a map of:
 // newPath -> oldPath
 // AfterTimestamp is inclusive.
-func RenamesLog(userID, afterTimestamp int64) map[string]string {
+func RenamesLog(userID string, afterTimestamp int64) map[string]string {
 	lock.RLock()
 	defer lock.RUnlock()
 
@@ -111,7 +111,7 @@ func RenamesLog(userID, afterTimestamp int64) map[string]string {
 // path -> deletedAt unix timestamp
 // AfterTimestamp is inclusive. If a path was deleted multiple times,
 // the latest timestamp wins.
-func DeletesLog(userID, afterTimestamp int64) map[string]int64 {
+func DeletesLog(userID string, afterTimestamp int64) map[string]int64 {
 	lock.RLock()
 	defer lock.RUnlock()
 

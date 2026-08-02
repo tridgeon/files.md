@@ -2671,7 +2671,7 @@ func (b *Bot) addToFile(dir, filename, content string) error {
 }
 
 func (b *Bot) openInApp(_ []string) error {
-	token := sync.GenOneTimeToken(b.userID)
+	token := sync.GenOneTimeToken(txt.I64(b.userID))
 	onetimeURL := fmt.Sprintf("%s?token=%s", config.ServerCfg.AppURL, token)
 	kb := tg.NewKeyboard([]tg.Row{tg.NewBtn(i18n.Tr("Open in app"), tg.NewURLCmd(onetimeURL))})
 

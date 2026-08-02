@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -189,7 +190,8 @@ func SyncFilenames(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if relativePath == fs.ChatFilename {
-			OnChatUpdate(userID(r))
+			usrid, _ := strconv.ParseInt(userID(r), 10, 64)
+			OnChatUpdate(usrid)
 		}
 	}
 
@@ -369,7 +371,8 @@ func SyncFile(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if relativePath == fs.ChatFilename {
-			OnChatUpdate(userID(r))
+			usrid, _ := strconv.ParseInt(userID(r), 10, 64)
+			OnChatUpdate(usrid)
 		}
 	}
 
@@ -440,6 +443,6 @@ func debugLogDelete(msg string, r *http.Request) {
 	}
 }
 
-func userID(r *http.Request) int64 {
-	return r.Context().Value("userID").(int64)
+func userID(r *http.Request) string {
+	return r.Context().Value("userID").(string)
 }

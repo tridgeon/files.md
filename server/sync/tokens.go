@@ -11,7 +11,6 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -39,11 +38,11 @@ var blockedIPs = make(map[string]time.Time)
 var blockedIPsMutex sync.RWMutex
 
 type oneTimeToken struct {
-	userID    int64
+	userID    string
 	expiresAt time.Time
 }
 
-func GenOneTimeToken(userID int64) string {
+func GenOneTimeToken(userID string) string {
 	token := genToken()
 
 	mu.Lock()
@@ -57,8 +56,8 @@ func GenOneTimeToken(userID int64) string {
 }
 func GenOneToken(w http.ResponseWriter, r *http.Request) {
 	userIDStr := r.URL.Query().Get("userid")
-	userID, _ := strconv.ParseInt(userIDStr, 10, 64)
-	token := GenOneTimeToken(userID) // TODO: replace with actual user ID
+	//userID, _ := strconv.ParseInt(userIDStr, 10, 64)
+	token := GenOneTimeToken(userIDStr) // TODO: replace with actual user ID
 	onetimeURL := fmt.Sprintf("%s?token=%s", config.ServerCfg.AppURL, token)
 	w.Write([]byte(onetimeURL))
 }
@@ -71,28 +70,30 @@ func GetUserID(w http.ResponseWriter, r *http.Request) {
 	}
 	userID, ok := findUserID(token)
 	if ok {
-		w.Write([]byte(strconv.FormatInt(userID, 10)))
+		w.Write([]byte(userID))
 	} else {
 		w.Write([]byte(""))
 	}
 }
 
-func findUserID(token string) (int64, bool) {
+func findUserID(token string) (string, bool) {
 	tokens, err := fs.NewFS(config.ServerCfg.TokensDir, afero.NewOsFs())
 	if err != nil {
 		slog.Error("Failed to create file system for tokens", "error", err)
-		return 0, false
+		return "", false
 	}
 
 	data, err := tokens.Read("/", hashToken(token))
 	if err != nil {
-		return 0, false
+		return "", false
 	}
 
-	userID, err := strconv.ParseInt(data, 10, 64)
-	if err != nil {
-		return 0, false
-	}
+	//userID, err := strconv.ParseInt(data, 10, 64)
+	// if err != nil {
+	// 	return 0, false
+	// }
+
+	userID := data
 
 	return userID, true
 }
@@ -267,7 +268,7 @@ func issueNewPermanentToken(r *http.Request) (string, bool) {
 		})
 		return "", false
 	}
-	err = tokens.Write(fs.DirUserRoot, hashToken(token), strconv.FormatInt(data.userID, 10))
+	err = tokens.Write(fs.DirUserRoot, hashToken(token), data.userID)
 	if err != nil {
 		logAuthFailure("onetime_swap_write_error_401", r, map[string]any{
 			"http_status": 401,

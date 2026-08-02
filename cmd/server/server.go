@@ -18,6 +18,7 @@ import (
 	"github.com/zakirullin/files.md/server/db"
 	"github.com/zakirullin/files.md/server/fs"
 	"github.com/zakirullin/files.md/server/pkg/tg"
+	"github.com/zakirullin/files.md/server/pkg/txt"
 	"github.com/zakirullin/files.md/server/sync"
 	"github.com/zakirullin/files.md/server/userconfig"
 )
@@ -34,7 +35,7 @@ func main() {
 	fs.LogDelete = sync.LogDelete
 
 	// Start the server and bot.
-	token := sync.GenOneTimeToken(123456789) // TODO: replace with actual user ID
+	token := sync.GenOneTimeToken("123456789") // TODO: replace with actual user ID
 	onetimeURL := fmt.Sprintf("%s?token=%s", config.ServerCfg.AppURL, token)
 	fmt.Println("One-time login URL:", onetimeURL)
 
@@ -168,7 +169,7 @@ func processUserUpdates(userID int64, updates <-chan tgbotapi.Update, telegram *
 }
 
 func newBot(telegram *tg.TG, userID int64) (*server.Bot, error) {
-	userFS, err := fs.NewUserFS(userID)
+	userFS, err := fs.NewUserFS(txt.I64(userID))
 	if err != nil {
 		return nil, fmt.Errorf("can't create fs: %w", err)
 	}
