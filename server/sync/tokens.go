@@ -61,7 +61,20 @@ func GenOneToken(w http.ResponseWriter, r *http.Request) {
 	token := GenOneTimeToken(userID) // TODO: replace with actual user ID
 	onetimeURL := fmt.Sprintf("%s?token=%s", config.ServerCfg.AppURL, token)
 	w.Write([]byte(onetimeURL))
+}
 
+func GetUserID(w http.ResponseWriter, r *http.Request) {
+	var token string
+
+	if cookie, err := r.Cookie(AuthCookieName); err == nil && cookie.Value != "" {
+		token = cookie.Value
+	}
+	userID, ok := findUserID(token)
+	if ok {
+		w.Write([]byte(strconv.FormatInt(userID, 10)))
+	} else {
+		w.Write([]byte(""))
+	}
 }
 
 func findUserID(token string) (int64, bool) {

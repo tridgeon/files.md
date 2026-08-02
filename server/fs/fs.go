@@ -93,15 +93,21 @@ func newUserFS(userID int64) (*FS, error) {
 }
 
 func newUserFSroot(userID int64, rootfolder string) (*FS, error) {
-	userAbsPath := path.Join(config.ServerCfg.StorageDir, txt.I64(userID), rootfolder)
-	backend := afero.NewOsFs()
 
-	quotaKB := config.ServerCfg.StorageQuotaKB
-	if isUnlimitedQuota(userID, config.ServerCfg.UnlimitedQuotaIDs) {
-		quotaKB = 0
+	// disabled for now as I am not 100% sure about it seems sort of okay but its ODD
+	if false {
+		userAbsPath := path.Join(config.ServerCfg.StorageDir, txt.I64(userID), rootfolder)
+		backend := afero.NewOsFs()
+
+		quotaKB := config.ServerCfg.StorageQuotaKB
+		if isUnlimitedQuota(userID, config.ServerCfg.UnlimitedQuotaIDs) {
+			quotaKB = 0
+		}
+
+		return NewFS(userAbsPath, backend, quotaKB)
+	} else {
+		return newUserFS(userID)
 	}
-
-	return NewFS(userAbsPath, backend, quotaKB)
 }
 func NewFS(absRootPath string, backend afero.Fs, quotaKB ...int64) (*FS, error) {
 	exists, err := afero.Exists(backend, absRootPath)

@@ -144,6 +144,7 @@ func router(serverLogger *log.Logger) *http.ServeMux {
 		r.HandleFunc("/syncMediaFile", corsMiddleware(panicMiddleware(tokenMiddleware(gzipMiddleware(SyncMediaFile)))))
 		r.HandleFunc("/issuePermanentToken", corsMiddleware(panicMiddleware(IssueToken)))
 		r.HandleFunc("/genOneToken", corsMiddleware(panicMiddleware(GenOneToken)))
+		r.HandleFunc("/getUserID", corsMiddleware(panicMiddleware(GetUserID)))
 
 		// Deprecated due to cryptic names :) Will be removed soon.
 		r.HandleFunc("/syncTexts", corsMiddleware(panicMiddleware(tokenMiddleware(gzipMiddleware(SyncFilenames)))))

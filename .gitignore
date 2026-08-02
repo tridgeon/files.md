@@ -8,3 +8,4 @@ tests/node_modules/
 tests/test-results/
 tests/playwright-report/
 IgnoreMe/
+server.exe

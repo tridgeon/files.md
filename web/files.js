@@ -44,6 +44,24 @@ function markServerOk() {
 // typed (clears on the next sync tick) or because the server is unreachable.
 // Hidden for local-only setups.
 let lastSyncOkAt = null;
+let myUserID = null;
+
+async function otherStatus() {
+    if (myUserID === null) {
+         const response = await fetch(`${API_URL}/getUserID`, {
+             method: 'POST',
+             credentials: 'include'
+         });
+
+         if (response.ok) {
+             myUserID =  await response.text();
+         }
+    }
+    let rootDirHandle = await getRootDirHandle();
+    document.getElementById('folder-info').style.display = 'flex';
+    document.getElementById('folder-info').textContent = `${rootDirHandle.name} ${myUserID}`;//hasSavedLocalDir ? savedDirHandle.name : 'In-memory storage';
+
+}
 
 function renderSyncStatus(state) { // 'ok' | 'edits' | 'error'
     const dot = document.getElementById('sync-status');
@@ -52,12 +70,14 @@ function renderSyncStatus(state) { // 'ok' | 'edits' | 'error'
     }
     const at = lastSyncOkAt === null
         ? 'never'
-        : new Date(lastSyncOkAt).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+        : new Date(lastSyncOkAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     dot.style.display = 'block';
     dot.classList.toggle('bad', state !== 'ok');
     dot.title = state === 'ok' ? `Synced at ${at}`
         : state === 'edits' ? `Unsynced changes. Last synced at ${at}`
-        : `Not synced, server unreachable. Last synced at ${at}`;
+            : `Not synced, server unreachable. Last synced at ${at}`;
+
+    otherStatus();
 }
 
 // Called on every editor change (see initEditor).
@@ -124,7 +144,7 @@ let files = {}; // In-memory representation of local files
 //   timestamps: { '<path>': <ts>, ... }, // per-path cursor for incremental sync
 //   mediaTimestamp: <max ts across media> // single cursor for media sync
 // }
-let server = {files: {}, media: {}, timestamps: {}, mediaTimestamp: 0}; // In-memory representation of server
+let server = { files: {}, media: {}, timestamps: {}, mediaTimestamp: 0 }; // In-memory representation of server
 
 // Reverse index for non-md files (currently just images): filename -> first.
 // Lets the editor resolve `![](foo.png)` even when the
@@ -190,7 +210,7 @@ async function loadLocalFiles(rootDirHandle, slowMode = false) {
 
                 currentDir[filename + '/'] = {};
                 const dir = `${path}${filename}/`;
-                dirPromises.push({handle: entry, path: dir, depth: depth + 1});
+                dirPromises.push({ handle: entry, path: dir, depth: depth + 1 });
             } else if (entry.kind === 'file' && (isSupportedExtension || isConfig)) {
                 // Reuse existing file handle if it exists
                 let existingDir = files;
@@ -207,7 +227,7 @@ async function loadLocalFiles(rootDirHandle, slowMode = false) {
                 if (fileWasPreviouslyLoaded) {
                     currentDir[filename] = existingDir[filename];
                 } else {
-                    currentDir[filename] = {path: `${path}${filename}`, isFile: true, handle: entry};
+                    currentDir[filename] = { path: `${path}${filename}`, isFile: true, handle: entry };
                     entry.getFile().then(file => {
                         currentDir[filename].lastModified = file.lastModified;
                     });
@@ -241,7 +261,7 @@ async function loadLocalFiles(rootDirHandle, slowMode = false) {
         }
 
         if (!slowMode) {
-            await Promise.all(dirPromises.map(({handle, path, depth}) =>
+            await Promise.all(dirPromises.map(({ handle, path, depth }) =>
                 loadDir(handle, path, depth)
             ));
             return;
@@ -250,7 +270,7 @@ async function loadLocalFiles(rootDirHandle, slowMode = false) {
         const batchSize = 6;
         for (let i = 0; i < dirPromises.length; i += batchSize) {
             const batch = dirPromises.slice(i, i + batchSize);
-            await Promise.all(batch.map(({handle, path, depth}) =>
+            await Promise.all(batch.map(({ handle, path, depth }) =>
                 loadDir(handle, path, depth)
             ));
             await new Promise(r => setTimeout(r, 0));
@@ -306,7 +326,7 @@ async function syncFilesWithServer() {
     ;
     if (hasFullySyncedFilesAtLeastOnce) {
         log('SYNCED AT LEAST ONCE, collecting local files', server['timestamps']);
-        ({modified, deleted} = await collectModifiedAndDeletedFiles());
+        ({ modified, deleted } = await collectModifiedAndDeletedFiles());
     } else {
         log('NEVER SYNCED BEFORE');
     }
@@ -334,12 +354,12 @@ async function syncFilesWithServer() {
         // Write files received from the server
         let failedAtLeastOnce = false;
         for (const fileInfo of response.files) {
-            let {path, content, lastModified} = fileInfo;
+            let { path, content, lastModified } = fileInfo;
             // We get relative paths from server, and in our app we use absolute paths
             const relPath = path;
-            
+
             path = joinPath('/', relPath);
-            if (path.includes('\\')) {  
+            if (path.includes('\\')) {
                 path = path.replace(/\\/g, '/');
             }
 
@@ -446,7 +466,7 @@ async function syncLocalFileWithServer(path) {
         // TODO we might only need to send content when modifying
         let content = await file.text();
         let serverTimestamp = getServerFile(path)?.lastModified || 0;
-        
+
         let serverFile = {};
         let rootDirHandle = await getRootDirHandle();
         const clientLastModified = file.lastModified;
@@ -553,7 +573,7 @@ async function syncMediaFiles() {
     }
 
     const mediaTimestamp = server['mediaTimestamp'] || 0;
-    if (mediaTimestamp !== 0 ) {
+    if (mediaTimestamp !== 0) {
         // Send new files from client to server
         let newMedias = await collectNewMediaFiles();
         for (const mediaFilename of newMedias) {
@@ -591,7 +611,7 @@ async function syncMediaFiles() {
                 });
                 if (!response.ok) {
                     let body = '';
-                    try { body = await response.text(); } catch (_) {}
+                    try { body = await response.text(); } catch (_) { }
                     logError(`Failed to sync media file ${mediaFilename}: ${response.status} ${response.statusText}: ${body}`.trim());
                 } else {
                     markServerOk();
@@ -619,7 +639,7 @@ async function syncMediaFiles() {
 
         let filesProcessed = 0;
         for (const fileInfo of serverData.files) {
-            const {filename, lastModified} = fileInfo;
+            const { filename, lastModified } = fileInfo;
             log(`Downloading media file: ${filename}`);
 
             try {
@@ -705,7 +725,7 @@ async function saveMediaFile(path, blob, lastModified) {
         saveServerFiles();
 
         // Load file handle into files
-        files['media/'][filename] = {isFile: true, handle: fileHandle};
+        files['media/'][filename] = { isFile: true, handle: fileHandle };
         fileHandle.getFile().then(file => {
             files['media/'][filename].lastModified = file.lastModified;
         });
@@ -1156,7 +1176,7 @@ async function openFile(path, saveToHistory = true, el = 'editor-textarea') {
         currentEditor = editor2;
     }
     // Only sync the switch-away editor when it has unsaved changes.
-    let thereIsPreviousEditorToSync =  !currentEditor.isClean() &&currentEditor.path !== undefined;
+    let thereIsPreviousEditorToSync = !currentEditor.isClean() && currentEditor.path !== undefined;
     if (thereIsPreviousEditorToSync) {
         const syncStart = performance.now();
         log('Began syncing previous file');
@@ -1226,7 +1246,7 @@ async function openFile(path, saveToHistory = true, el = 'editor-textarea') {
                 let oldEnd = oldContent.length;
                 let newEnd = content.length;
                 while (oldEnd > prefixEnd && newEnd > prefixEnd
-                && oldContent[oldEnd - 1] === content[newEnd - 1]) {
+                    && oldContent[oldEnd - 1] === content[newEnd - 1]) {
                     oldEnd--;
                     newEnd--;
                 }
@@ -1566,12 +1586,12 @@ function hash(str) {
 // Return false from callback to stop walking.
 function walk(obj, callback, path = '/') {
     // Chromium's callstack limit is 11K, so we iterate.
-    const stack = [{obj, path}];
+    const stack = [{ obj, path }];
 
     const maxAllowedIterations = 100000;
     let iterations = 0;
     while (stack.length > 0) {
-        const {obj: currentObj, path: currentPath} = stack.pop();
+        const { obj: currentObj, path: currentPath } = stack.pop();
 
         // Normally that would never happen.
         // But in case of an error, a watchdog like that can prevent freezing.
@@ -1629,7 +1649,7 @@ function walk(obj, callback, path = '/') {
             const key = dirs[i];
             const item = currentObj[key];
             const fullPath = currentPath + key;
-            stack.push({obj: item, path: fullPath});
+            stack.push({ obj: item, path: fullPath });
         }
     }
 }
@@ -1654,7 +1674,7 @@ function toFilename(path) {
         return '/';
     }
 
-    const {filename} = toDirPathAndFilename(path);
+    const { filename } = toDirPathAndFilename(path);
 
     return filename;
 }
@@ -1699,7 +1719,7 @@ async function addBacklink(sourcePath, targetPath) {
         const doc = open.getDoc();
         const body = value.replace(/\s+$/, '');
         const from = open.posFromIndex(body.length);
-        const to = {line: doc.lastLine(), ch: doc.getLine(doc.lastLine()).length};
+        const to = { line: doc.lastLine(), ch: doc.getLine(doc.lastLine()).length };
         doc.replaceRange(separatorFor(value) + backlink, from, to);
         return;
     }
@@ -1729,7 +1749,7 @@ async function addBacklink(sourcePath, targetPath) {
 // Dir with no slash at the end.
 // For '/' it returns '/'.
 function toDirPath(path) {
-    const {dirPath} = toDirPathAndFilename(path);
+    const { dirPath } = toDirPathAndFilename(path);
 
     return dirPath;
 }
@@ -1766,7 +1786,7 @@ function toDirPathAndFilename(path) {
 
     const filename = parts.pop();
     let dirPath = '/' + parts.join('/');
-    return {dirPath, filename};
+    return { dirPath, filename };
 }
 
 function excludeDirs(excludedDirs) {
