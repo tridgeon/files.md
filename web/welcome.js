@@ -17,7 +17,7 @@ async function getTemporaryStorageDirHandle() {
     // OPFS requires a secure context (https or localhost), not available on file://
     try {
         const root = await navigator.storage.getDirectory();
-        
+
         // Skip the seed only when the LAST welcome file is already on disk.
         // Using "any entries" as the seeded marker is racy: a reader
         // arriving mid-seed sees the first dir already written and returns
@@ -263,152 +263,154 @@ function prefetchWelcomeImages() {
 }
 
 const WELCOME_FILES = {
-    "brain/": {
-        "We think that we understand, but in reality we just know.md": {
-            "content": "Reading and rereading can easily fool us into believing that we understand a text. Rereading is especially dangerous because of the mere-exposure effect: The moment we become familiar with something, we start believing we also understand it. On top of that, we also tend to like it it more.\n\n[Brain is the most complex object in known universe](/brain/Brain%20is%20the%20most%20complex%20object%20in%20known%20universe.md)\n[Zettelkasten](/brain/Zettelkasten.md)",
+    "FilesMD-Welcome/": {
+        "brain/": {
+            "We think that we understand, but in reality we just know.md": {
+                "content": "Reading and rereading can easily fool us into believing that we understand a text. Rereading is especially dangerous because of the mere-exposure effect: The moment we become familiar with something, we start believing we also understand it. On top of that, we also tend to like it it more.\n\n[Brain is the most complex object in known universe](/brain/Brain%20is%20the%20most%20complex%20object%20in%20known%20universe.md)\n[Zettelkasten](/brain/Zettelkasten.md)",
+                isFile: true,
+            },
+            "Brain is the most complex object in known universe.md": {
+                "content": "Nothing will make you appreciate human intelligence like learning about how unbelievably challenging it is to try to create a computer as smart as we are. Building skyscrapers, putting humans in space, figuring out the details of how the Big Bang went down - all far easier than understanding our own brain or how to make something as cool as it\n\n[We think that we understand, but in reality we just know](/brain/We%20think%20that%20we%20understand,%20but%20in%20reality%20we%20just%20know.md)\n[Zettelkasten](/brain/Zettelkasten.md)",
+                isFile: true,
+            },
+            "Change your environment instead of using willpower.md": {
+                "content": "When scientists analyze people who appear to have tremendous self-control, it turns out those individuals aren’t all that different from those who are struggling. Instead, “disciplined” people are better at structuring their lives in a way that does not require heroic willpower and self-control.\n\nIt is the way Luhmann and his slipbox  worked together that allowed him to move freely and flexibly between different tasks and levels of thinking. It is about having the right tools and knowing how to use them - and very few understand that you need both.\n\n" +
+                    "Luhmann was able to focus on the important things right in front of him, pick up quickly where he left off and stay in control of the process because the structure of his work allowed him to do this.\n\n" +
+                    "[Zettelkasten](/brain/Zettelkasten.md)",
+                isFile: true,
+            },
+            "Zettelkasten.md": {
+                "content":
+                    "Zettelkasten, slipbox, or card file - a collection of small items of information stored on paper slips, linked to each other through subject headings or links. It has often been used as a system of note-taking and personal knowledge management for research, study, and writing.\n\n" +
+                    "Niklas Luhmann described his slipbox as a \"competent communication partner\", a \"second memory\" he could communicate with.\n\n" +
+                    "![](img/slipbox.webp)\n\n" +
+                    "## Main Zettelkasten principles\n" +
+                    "#### The principle of atomicity\n" +
+                    "Each note should contain one idea and one idea only. This makes it possible to link ideas with a laser focus.\n\n" +
+                    "#### The principle of autonomy\n" +
+                    "Each note should be autonomous, meaning it should be self-contained and comprehensible on its own. This allows notes to be moved, processed, separated, and concatenated independently of its neighbors. It also ensures that notes remain useful even if the original source of information disappears.\n\n" +
+                    "#### Always link your notes\n" +
+                    "Whenever you add a note, make sure to link it to already existing notes. Avoid notes that are disconnected from other notes. As Luhmann himself put it, \"each note is just an element that derives its quality from the network of links in the system. A note that is not connected to the network will be lost, will be forgotten by the Zettelkasten\".\n\n" +
+                    "**Files.md** has just enough features for you to grow your **Zettelkasten**. 🌱\n\n" +
+                    "[Change your environment instead of using willpower](/brain/Change%20your%20environment%20instead%20of%20using%20willpower.md)\n" +
+                    "[We think that we understand, but in reality we just know](/brain/We%20think%20that%20we%20understand,%20but%20in%20reality%20we%20just%20know.md)\n" +
+                    "[Links](/Links.md)",
+                isFile: true,
+            },
+        },
+        "happiness/": {
+            "Abundant meditation.md": {
+                "content": "Once you are relaxed, picture yourself living in an abundant world.\nIn this abundant world, there are no restraints or limitations.\nGood things flow past you continuously.\nImagine every abundant thing you have ever desired - car, home, friends, love, joy, wealth, success, peace of mind, challenge.\nVisualize yourself living your life surrounded by this abundance.\n\n![](img/tomas_sanchez.jpg)\n\nThe deeper meaning behind abundance visualization isn't necessarily about accumulating material possessions like money or cars.\n\nTrue abundance thinking is more about recognizing that in a world without artificial limitations, we would understand that our value and fulfillment don't come from external possessions. Instead, it's about cultivating an internal sense of “enough” and recognizing the richness that already exists in our lives.\n\n// If you had abundance without limitations, what would you do?\n\n// What stops you from doing it now?\n\n[Boredom is just an emotion](/happiness/Boredom%20is%20just%20an%20emotion.md)",
+                isFile: true,
+            },
+            "Boredom is just an emotion.md": {
+                "content": "It's not an indicator that you're doing something wrong in your life.\n\nBefore we had phones and technologies, we would just sit around the fire and we would talk. We wouldn't call that boring, that was just life.\n\n![](img/tomas_sanchez.jpg)\n\nAnd now we have that endless need for entertainment. When nothing is happening, we think it's wrong and we need to fix it.\n\nNon eventfulness is just a part of our life, and you can embrace it as peace, or you can frantically try to create more chaos.\n\n[Abundant meditation](/happiness/Abundant meditation.md)",
+                isFile: true,
+            },
+        },
+        "🪴 Welcome.md": {
+            "content":
+                "To store files locally, [open or create a folder](cmd:openDir).\n\n" +
+                "Use [chat](cmd:openChat) to dump whatever is on your mind.\n\n" +
+                "Press `Cmd+K` or `Ctrl+K` to quick switch between files.\n\n" +
+                "[Markdown Guide](/Markdown%20Guide.md)\n[Zettelkasten](/brain/Zettelkasten.md)\n[Hotkeys](/Hotkeys.md)\n[Links](/Links.md)",
             isFile: true,
         },
-        "Brain is the most complex object in known universe.md": {
-            "content": "Nothing will make you appreciate human intelligence like learning about how unbelievably challenging it is to try to create a computer as smart as we are. Building skyscrapers, putting humans in space, figuring out the details of how the Big Bang went down - all far easier than understanding our own brain or how to make something as cool as it\n\n[We think that we understand, but in reality we just know](/brain/We%20think%20that%20we%20understand,%20but%20in%20reality%20we%20just%20know.md)\n[Zettelkasten](/brain/Zettelkasten.md)",
-            isFile: true,
-        },
-        "Change your environment instead of using willpower.md": {
-            "content": "When scientists analyze people who appear to have tremendous self-control, it turns out those individuals aren’t all that different from those who are struggling. Instead, “disciplined” people are better at structuring their lives in a way that does not require heroic willpower and self-control.\n\nIt is the way Luhmann and his slipbox  worked together that allowed him to move freely and flexibly between different tasks and levels of thinking. It is about having the right tools and knowing how to use them - and very few understand that you need both.\n\n" +
-                "Luhmann was able to focus on the important things right in front of him, pick up quickly where he left off and stay in control of the process because the structure of his work allowed him to do this.\n\n" +
+        "Links.md": {
+            "content": "Links are important.\n" +
+                "\n" +
+                "Relations among ideas are far more important than the ideas themselves.\n" +
+                "Learning is making meaningful connections.\n\n" +
+                "Type `[` to insert a new link.\n\n" +
+                "[Markdown Guide](/Markdown%20Guide.md)\n" +
                 "[Zettelkasten](/brain/Zettelkasten.md)",
             isFile: true,
         },
-        "Zettelkasten.md": {
+        "Markdown Guide.md": {
             "content":
-                "Zettelkasten, slipbox, or card file - a collection of small items of information stored on paper slips, linked to each other through subject headings or links. It has often been used as a system of note-taking and personal knowledge management for research, study, and writing.\n\n" +
-                "Niklas Luhmann described his slipbox as a \"competent communication partner\", a \"second memory\" he could communicate with.\n\n" +
-                "![](img/slipbox.webp)\n\n" +
-                "## Main Zettelkasten principles\n" +
-                "#### The principle of atomicity\n" +
-                "Each note should contain one idea and one idea only. This makes it possible to link ideas with a laser focus.\n\n" +
-                "#### The principle of autonomy\n" +
-                "Each note should be autonomous, meaning it should be self-contained and comprehensible on its own. This allows notes to be moved, processed, separated, and concatenated independently of its neighbors. It also ensures that notes remain useful even if the original source of information disappears.\n\n" +
-                "#### Always link your notes\n" +
-                "Whenever you add a note, make sure to link it to already existing notes. Avoid notes that are disconnected from other notes. As Luhmann himself put it, \"each note is just an element that derives its quality from the network of links in the system. A note that is not connected to the network will be lost, will be forgotten by the Zettelkasten\".\n\n" +
-                "**Files.md** has just enough features for you to grow your **Zettelkasten**. 🌱\n\n" +
-                "[Change your environment instead of using willpower](/brain/Change%20your%20environment%20instead%20of%20using%20willpower.md)\n" +
-                "[We think that we understand, but in reality we just know](/brain/We%20think%20that%20we%20understand,%20but%20in%20reality%20we%20just%20know.md)\n" +
+                "Create headers with `# header`.\nAdd more # symbols for smaller headers: `## smaller header`.\n" +
+                "\n" +
+                "## Text Formatting\n" +
+                "- **Bold text** using `**bold**` **(Cmd/Ctrl + B)**\n" +
+                "- *Italic text* using `*italic*` **(Cmd/Ctrl + I)**\n" +
+                "- ***Bold and italic*** using `***text***`\n" +
+                "- ~~Strikethrough~~ using `~~text~~`\n" +
+                "- `Inline code` using backticks\n" +
+                "\n" +
+                "## Link\n" +
+                "You can insert your own links by typing `[`.\n" +
+                "\n" +
+                "## List\n" +
+                "- First item\n" +
+                "- Second item\n" +
+                "  - Third item\n\n" +
+                "1. First item\n" +
+                "2. Second item\n" +
+                "   1. Third item\n\n" +
+                "## Checklist\n" +
+                "- [x] Completed task\n" +
+                "- [ ] Incomplete task\n\n" +
+                "Syntax:\n`- [ ] Item`\n" +
+                "\n" +
+                "## Table\n" +
+                "| Action | Hotkey |\n" +
+                "| --- | --- |\n" +
+                "| Insert table | `Cmd/Ctrl + T` |\n" +
+                "| Insert checkbox | `Cmd/Ctrl + Y` |\n\n" +
+                "## Image\n" +
+                "![](img/tomas_sanchez.jpg)\n" +
+                "\n" +
+                "*You can paste your own images via `Cmd/Ctrl + V`*\n\n" +
+                "## Blockquote\n" +
+                ">This is a blockquote. It can span multiple lines and is great for highlighting important information or quotes from other sources.\n" +
+                "\nSyntax:\n`> This is a blockquote`\n" +
+                "\n" +
+                "## Code Block\n" +
+                "```\n" +
+                "Here is some code.\n" +
+                "```\n" +
+                "\n" +
+                "## Math\n" +
+                "$\\LaTeX$ is fully supported: $e^{i\\pi} + 1 = 0$\n" +
+                "\n" +
+                "[Links](/Links.md)\n" +
+                "[My Project](/My%20Project.md)",
+            isFile: true,
+        },
+        "Hotkeys.md": {
+            "content":
+                "| Hotkey | Action |\n" +
+                "| -------- | -------- |\n" +
+                "| `[` | Insert a link to a file |\n" +
+                "| `Cmd+K` / `Ctrl+K` | Open file search modal |\n" +
+                "| `Cmd+N` / `Ctrl+N` | New file |\n" +
+                "| `Cmd+M` / `Ctrl+M` | Move file |\n" +
+                "| `Cmd+D` / `Ctrl+D` | Delete file |\n" +
+                "| `Cmd+Enter` / `Ctrl+Enter` | Open chat |\n" +
+                "| `Cmd+Shift+Enter` / `Ctrl+Shift+Enter` | Toggle chat dialog |\n" +
+                "| `Cmd+[` / `Ctrl+[` | Go to previous file |\n" +
+                "| `Cmd+]` / `Ctrl+]` | Go to next file  |\n" +
+                "| `Cmd+~` / `Ctrl+~` | Toggle sidebar |\n" +
+                "| `Cmd+B` / `Ctrl+B` | Toggle **bold** formatting |\n" +
+                "| `Cmd+I` / `Ctrl+I` | Toggle *italic* formatting |\n" +
+                "| `Cmd+Y` / `Ctrl+Y` | Insert checkbox |\n" +
+                "| `Cmd+T` / `Ctrl+T` | Insert table |\n" +
+                "| `Cmd+Shift+E` / `Ctrl+Shift+E` | Encrypt selected text |\n" +
+                "| `Cmd` / `Ctrl` + `Click` | Copy from `code` element |\n" +
+                "| `Cmd` / `Ctrl` + `Click` | Open a link  |\n" +
+                "| `Ctrl` + `Cmd` + `Space` | Insert emoji (MacOS) |\n" +
+                "\n" +
+                "[Markdown Guide](/Markdown%20Guide.md)",
+            isFile: true,
+        },
+        "My Project.md": {
+            "content":
+                "You can dump project related thoughts here.\n" +
+                "\n" +
                 "[Links](/Links.md)",
             isFile: true,
         },
-    },
-    "happiness/": {
-        "Abundant meditation.md": {
-            "content": "Once you are relaxed, picture yourself living in an abundant world.\nIn this abundant world, there are no restraints or limitations.\nGood things flow past you continuously.\nImagine every abundant thing you have ever desired - car, home, friends, love, joy, wealth, success, peace of mind, challenge.\nVisualize yourself living your life surrounded by this abundance.\n\n![](img/tomas_sanchez.jpg)\n\nThe deeper meaning behind abundance visualization isn't necessarily about accumulating material possessions like money or cars.\n\nTrue abundance thinking is more about recognizing that in a world without artificial limitations, we would understand that our value and fulfillment don't come from external possessions. Instead, it's about cultivating an internal sense of “enough” and recognizing the richness that already exists in our lives.\n\n// If you had abundance without limitations, what would you do?\n\n// What stops you from doing it now?\n\n[Boredom is just an emotion](/happiness/Boredom%20is%20just%20an%20emotion.md)",
-            isFile: true,
-        },
-        "Boredom is just an emotion.md": {
-            "content": "It's not an indicator that you're doing something wrong in your life.\n\nBefore we had phones and technologies, we would just sit around the fire and we would talk. We wouldn't call that boring, that was just life.\n\n![](img/tomas_sanchez.jpg)\n\nAnd now we have that endless need for entertainment. When nothing is happening, we think it's wrong and we need to fix it.\n\nNon eventfulness is just a part of our life, and you can embrace it as peace, or you can frantically try to create more chaos.\n\n[Abundant meditation](/happiness/Abundant meditation.md)",
-            isFile: true,
-        },
-    },
-    "🪴 Welcome.md": {
-        "content":
-            "To store files locally, [open or create a folder](cmd:openDir).\n\n" +
-            "Use [chat](cmd:openChat) to dump whatever is on your mind.\n\n" +
-            "Press `Cmd+K` or `Ctrl+K` to quick switch between files.\n\n" +
-            "[Markdown Guide](/Markdown%20Guide.md)\n[Zettelkasten](/brain/Zettelkasten.md)\n[Hotkeys](/Hotkeys.md)\n[Links](/Links.md)",
-        isFile: true,
-    },
-    "Links.md": {
-        "content": "Links are important.\n" +
-            "\n" +
-            "Relations among ideas are far more important than the ideas themselves.\n" +
-            "Learning is making meaningful connections.\n\n" +
-            "Type `[` to insert a new link.\n\n" +
-            "[Markdown Guide](/Markdown%20Guide.md)\n" +
-            "[Zettelkasten](/brain/Zettelkasten.md)",
-        isFile: true,
-    },
-    "Markdown Guide.md": {
-        "content":
-            "Create headers with `# header`.\nAdd more # symbols for smaller headers: `## smaller header`.\n" +
-            "\n" +
-            "## Text Formatting\n" +
-            "- **Bold text** using `**bold**` **(Cmd/Ctrl + B)**\n" +
-            "- *Italic text* using `*italic*` **(Cmd/Ctrl + I)**\n" +
-            "- ***Bold and italic*** using `***text***`\n" +
-            "- ~~Strikethrough~~ using `~~text~~`\n" +
-            "- `Inline code` using backticks\n" +
-            "\n" +
-            "## Link\n" +
-            "You can insert your own links by typing `[`.\n" +
-            "\n" +
-            "## List\n" +
-            "- First item\n" +
-            "- Second item\n" +
-            "  - Third item\n\n" +
-            "1. First item\n" +
-            "2. Second item\n" +
-            "   1. Third item\n\n" +
-            "## Checklist\n" +
-            "- [x] Completed task\n" +
-            "- [ ] Incomplete task\n\n" +
-            "Syntax:\n`- [ ] Item`\n" +
-            "\n" +
-            "## Table\n" +
-            "| Action | Hotkey |\n" +
-            "| --- | --- |\n" +
-            "| Insert table | `Cmd/Ctrl + T` |\n" +
-            "| Insert checkbox | `Cmd/Ctrl + Y` |\n\n" +
-            "## Image\n" +
-            "![](img/tomas_sanchez.jpg)\n" +
-            "\n" +
-            "*You can paste your own images via `Cmd/Ctrl + V`*\n\n" +
-            "## Blockquote\n" +
-            ">This is a blockquote. It can span multiple lines and is great for highlighting important information or quotes from other sources.\n" +
-            "\nSyntax:\n`> This is a blockquote`\n" +
-            "\n" +
-            "## Code Block\n" +
-            "```\n" +
-            "Here is some code.\n" +
-            "```\n" +
-            "\n" +
-            "## Math\n" +
-            "$\\LaTeX$ is fully supported: $e^{i\\pi} + 1 = 0$\n" +
-            "\n" +
-            "[Links](/Links.md)\n" +
-            "[My Project](/My%20Project.md)",
-        isFile: true,
-    },
-    "Hotkeys.md": {
-        "content":
-            "| Hotkey | Action |\n" +
-            "| -------- | -------- |\n" +
-            "| `[` | Insert a link to a file |\n" +
-            "| `Cmd+K` / `Ctrl+K` | Open file search modal |\n" +
-            "| `Cmd+N` / `Ctrl+N` | New file |\n" +
-            "| `Cmd+M` / `Ctrl+M` | Move file |\n" +
-            "| `Cmd+D` / `Ctrl+D` | Delete file |\n" +
-            "| `Cmd+Enter` / `Ctrl+Enter` | Open chat |\n" +
-            "| `Cmd+Shift+Enter` / `Ctrl+Shift+Enter` | Toggle chat dialog |\n" +
-            "| `Cmd+[` / `Ctrl+[` | Go to previous file |\n" +
-            "| `Cmd+]` / `Ctrl+]` | Go to next file  |\n" +
-            "| `Cmd+~` / `Ctrl+~` | Toggle sidebar |\n" +
-            "| `Cmd+B` / `Ctrl+B` | Toggle **bold** formatting |\n" +
-            "| `Cmd+I` / `Ctrl+I` | Toggle *italic* formatting |\n" +
-            "| `Cmd+Y` / `Ctrl+Y` | Insert checkbox |\n" +
-            "| `Cmd+T` / `Ctrl+T` | Insert table |\n" +
-            "| `Cmd+Shift+E` / `Ctrl+Shift+E` | Encrypt selected text |\n" +
-            "| `Cmd` / `Ctrl` + `Click` | Copy from `code` element |\n" +
-            "| `Cmd` / `Ctrl` + `Click` | Open a link  |\n" +
-            "| `Ctrl` + `Cmd` + `Space` | Insert emoji (MacOS) |\n" +
-            "\n" +
-            "[Markdown Guide](/Markdown%20Guide.md)",
-        isFile: true,
-    },
-    "My Project.md": {
-        "content":
-            "You can dump project related thoughts here.\n" +
-            "\n" +
-            "[Links](/Links.md)",
-        isFile: true,
-    },
+    }
 }
 
 function getHelpContent() {
